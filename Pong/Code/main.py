@@ -24,12 +24,15 @@ class Players:
 
 class Pong:
     def __init__(self):
+        self.PuntosPlayerOne = 0
+        self.PuntosPlayerTwo = 0
         self.OnePlayerY = 63
         self.TwoPlayerY = 63
         self.BallX = 120
         self.BallY = 75
         self.Velocity = 3
         self.Score = 0
+        self.MensajeGanador = ""
         self.Horizontal = True
         self.Vertical = False
         self.PASOS = 4
@@ -37,6 +40,7 @@ class Pong:
         self.PlayerTwo = Players(220,self.TwoPlayerY,4,25)
         self.BallDetails = Ball(self.BallX,self.BallY,2,2)
         pyxel.init(240,150,caption="PongGame",)
+        pyxel.mouse(True)
         pyxel.run(self.update,self.draw)
 
 
@@ -56,14 +60,38 @@ class Pong:
 
         #Movimiento Prueba1
         if (self.BallX>=240):
-            #self.Horizontal = True
             self.BallX = 120
             self.BallY = 75
+            self.Horizontal = True
+            self.PuntosPlayerOne += 1
+
         if (self.BallX<=0):
-            #self.Horizontal = False
             self.BallX = 120
             self.BallY = 75
-            
+            self.Horizontal = False
+            self.PuntosPlayerTwo += 1
+
+        if (self.PuntosPlayerOne==5 or self.PuntosPlayerTwo==5):
+            if (self.PuntosPlayerOne==5):
+                self.MensajeGanador = "Player ONE win \n\n\n\n R = Reset\n ESC = Exit"
+            if (self.PuntosPlayerTwo==5):
+                self.MensajeGanador = "Player TWO win \n\n\n\n R = Reset\n ESC = Exit"
+            pyxel.flip()
+            self.Velocity = 0
+            self.PASOS = 0
+            self.BallX = 120
+            self.BallY = 75
+            self.OnePlayerY = 63
+            self.TwoPlayerY = 63
+            if (pyxel.btn(pyxel.KEY_R)):
+                self.PuntosPlayerOne = 0
+                self.PuntosPlayerTwo = 0
+                self.MensajeGanador = ""
+                self.PASOS = 4
+                self.Velocity = 3
+                self.OnePlayerY = 63
+                self.TwoPlayerY = 63
+                
         if (self.BallY>=150):
             self.Vertical = True
         if (self.BallY<=0):
@@ -107,6 +135,9 @@ class Pong:
 
     def draw(self):
         pyxel.cls(0)
+        pyxel.text(95,60,str(self.MensajeGanador),7)
+        pyxel.text(15,10,str(self.PuntosPlayerOne),7)
+        pyxel.text(220,10,str(self.PuntosPlayerTwo),7)
         pyxel.rect(15,self.OnePlayerY,4,25,7)
         pyxel.rect(220,self.TwoPlayerY,4,25,7)
         pyxel.circ(self.BallX,self.BallY,2,7)
