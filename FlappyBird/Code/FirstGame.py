@@ -1,9 +1,9 @@
 import pyxel
-
+from random import randint
 class PongGame:
 
     def __init__(self):
-        pyxel.init(256,175,caption="Pong",quit_key=pyxel.KEY_ESCAPE,fps=30)
+        pyxel.init(256,175,caption="Pong",fps=30)
         self.xMouse = 0
         self.yMouse = 0  
         self.PlayerY = 0
@@ -21,7 +21,7 @@ class PongGame:
         self.yMouse = pyxel.mouse_y
         if self.PlayerY<140:
             self.PlayerY += self.Gravity
-        if (pyxel.btn(pyxel.KEY_SPACE) or pyxel.btn(pyxel.KEY_W) or pyxel.btn(pyxel.KEY_UP) or pyxel.btn(pyxel.GAMEPAD_1_A))and self.jump and self.PlayerY>-5:
+        if (pyxel.btn(pyxel.KEY_SPACE) or pyxel.btn(pyxel.KEY_W) or pyxel.btn(pyxel.KEY_UP) or pyxel.btn(pyxel.GAMEPAD_1_A))and self.jump and self.PlayerY>-15:
             i = 0
             while i<5:
                 self.Skin = 16     
@@ -36,13 +36,13 @@ class PongGame:
 
 
 
-
     def draw(self):
         pyxel.cls(6)
         #pyxel.bltm(0,0,0,0,0,80,50,0)
         offset = pyxel.frame_count % 256
         for i in range(2):
             pyxel.blt(i * 256 - offset,151,0,0,16,256,24)
+        pyxel.blt(,100,0,0,40,24,16,0)
         pyxel.blt(25,self.PlayerY,0,self.Skin,0,16,16,0)
         pyxel.circ(self.xMouse,self.yMouse,1,0)
 
