@@ -1,5 +1,27 @@
 import pyxel
 
+class Ball:
+    def __init__(self,x,y,w,h):
+        self.x = x
+        self.y = y
+        self.w = w
+        self.h = h
+        self.col = 8
+
+class Players:
+    def __init__(self,x,y,w,h):
+        self.x = x
+        self.y = y
+        self.w = w
+        self.h = h
+        self.col = 8
+
+    def is_colliding(self, other):
+        return self.x < other.x + other.w and \
+            self.x + self.w > other.x and \
+            self.y < other.y + other.h and \
+            self.y + self.h > other.y
+
 class Pong:
     def __init__(self):
         self.OnePlayerY = 63
@@ -10,11 +32,15 @@ class Pong:
         self.Score = 0
         self.Horizontal = True
         self.Vertical = False
-        self.PASOS = 2
+        self.PASOS = 4
+        self.PlayerOne = Players(15,self.OnePlayerY,4,25)
+        self.PlayerTwo = Players(220,self.TwoPlayerY,4,25)
+        self.BallDetails = Ball(self.BallX,self.BallY,2,2)
         pyxel.init(240,150,caption="PongGame",)
         pyxel.run(self.update,self.draw)
-    def update(self):
 
+
+    def update(self):
 
         #Player1 Keys
         if (pyxel.btn(pyxel.KEY_W) and self.OnePlayerY>0):
@@ -30,9 +56,14 @@ class Pong:
 
         #Movimiento Prueba1
         if (self.BallX>=240):
-            self.Horizontal = True
+            #self.Horizontal = True
+            self.BallX = 120
+            self.BallY = 75
         if (self.BallX<=0):
-            self.Horizontal = False
+            #self.Horizontal = False
+            self.BallX = 120
+            self.BallY = 75
+            
         if (self.BallY>=150):
             self.Vertical = True
         if (self.BallY<=0):
@@ -60,16 +91,24 @@ class Pong:
         if (self.OrientacionY==False and self.Vertical==False):
             self.BallY += self.Velocity
 
+        #Update position players
+        self.PlayerOne.y = self.OnePlayerY
+        self.PlayerTwo.y = self.TwoPlayerY
+
+        #Update position ball
+        self.BallDetails.x = self.BallX
+        self.BallDetails.y = self.BallY
+
+        #Collsions
+        if self.PlayerOne.is_colliding(self.BallDetails):
+            self.Horizontal = False
+        if self.PlayerTwo.is_colliding(self.BallDetails):
+            self.Horizontal = True
 
     def draw(self):
         pyxel.cls(0)
-        pyxel.text(10,10,str(self.BallY),1)
-        pyxel.text(20,20,str(self.BallX),1)
-        pyxel.text(10,20,str(self.OrientacionY),1)
-        pyxel.text(20,30,str(self.OrientacionX),1)
-
-        pyxel.rect(0,75,240,1,2)
-        pyxel.circ(self.BallX,self.BallY,2,3)
         pyxel.rect(15,self.OnePlayerY,4,25,7)
         pyxel.rect(220,self.TwoPlayerY,4,25,7)
-Pong()
+        pyxel.circ(self.BallX,self.BallY,2,7)
+
+Pong() 
