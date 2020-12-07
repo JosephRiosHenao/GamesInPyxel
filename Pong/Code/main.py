@@ -39,6 +39,9 @@ class Pong:
         self.PlayerOne = Players(15,self.OnePlayerY,4,25)
         self.PlayerTwo = Players(220,self.TwoPlayerY,4,25)
         self.BallDetails = Ball(self.BallX,self.BallY,2,2)
+        self.ColorObjectsBG = 7
+        self.ColorBG = 0
+        self.ColorObjects =7
         pyxel.init(240,150,caption="PongGame",)
         pyxel.mouse(True)
         pyxel.run(self.update,self.draw)
@@ -60,12 +63,14 @@ class Pong:
 
         #Movimiento Prueba1
         if (self.BallX>=240):
+            Pong.ColorDefine(self)
             self.BallX = 120
             self.BallY = 75
             self.Horizontal = True
             self.PuntosPlayerOne += 1
 
         if (self.BallX<=0):
+            Pong.ColorDefine(self)
             self.BallX = 120
             self.BallY = 75
             self.Horizontal = False
@@ -84,6 +89,7 @@ class Pong:
             self.OnePlayerY = 63
             self.TwoPlayerY = 63
             if (pyxel.btn(pyxel.KEY_R)):
+                self.Score = 0
                 self.PuntosPlayerOne = 0
                 self.PuntosPlayerTwo = 0
                 self.MensajeGanador = ""
@@ -126,20 +132,33 @@ class Pong:
         #Update position ball
         self.BallDetails.x = self.BallX
         self.BallDetails.y = self.BallY
-
+        
         #Collsions
         if self.PlayerOne.is_colliding(self.BallDetails):
             self.Horizontal = False
+            self.Score += 5
         if self.PlayerTwo.is_colliding(self.BallDetails):
             self.Horizontal = True
+            self.Score += 5
 
     def draw(self):
-        pyxel.cls(0)
-        pyxel.text(95,60,str(self.MensajeGanador),7)
-        pyxel.text(15,10,str(self.PuntosPlayerOne),7)
-        pyxel.text(220,10,str(self.PuntosPlayerTwo),7)
-        pyxel.rect(15,self.OnePlayerY,4,25,7)
-        pyxel.rect(220,self.TwoPlayerY,4,25,7)
-        pyxel.circ(self.BallX,self.BallY,2,7)
+        pyxel.cls(self.ColorBG)
+        pyxel.line(120,0,120,150,self.ColorObjectsBG)
+        pyxel.text(95,60,str(self.MensajeGanador),self.ColorObjectsBG)
+        pyxel.text(105,10,"Score: "+str(self.Score),self.ColorObjectsBG)
+        pyxel.text(15,10,str(self.PuntosPlayerOne),self.ColorObjectsBG)
+        pyxel.text(220,10,str(self.PuntosPlayerTwo),self.ColorObjectsBG)
+        pyxel.rect(15,self.OnePlayerY,4,25,self.ColorObjects)
+        pyxel.rect(220,self.TwoPlayerY,4,25,self.ColorObjects)
+        pyxel.circ(self.BallX,self.BallY,2,self.ColorObjects)
 
+    def ColorDefine(self):
+        if  self.ColorBG == 7 and self.ColorObjects == 0 and self.ColorObjectsBG == 0:
+            self.ColorBG = 0
+            self.ColorObjects = 7
+            self.ColorObjectsBG = 7
+        else:
+            self.ColorBG = 7
+            self.ColorObjects = 0
+            self.ColorObjectsBG = 0
 Pong() 
