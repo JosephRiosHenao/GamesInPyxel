@@ -11,4 +11,5 @@ class Menu:
     def draw(self):
         pyxel.cls(7)
         pyxel.bltm(0,0,0,0,0,100,100)
+        gg ex
 Menu()
