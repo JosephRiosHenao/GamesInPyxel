@@ -1,16 +1,15 @@
 import pyxel
-class MouseLocation:
-    def __init__(self):
-        self.x = pyxel.mouse_x
-        self.y = pyxel.mouse_y
-        self.w = 3
-        self.h = 3
+class MouseCheckLocation:
+    def __init__(self,x,y,w,h):
+        self.x = x
+        self.y = y
+        self.w = w
+        self.h = h
     def IsColliding(self, other):
         return self.x < other.x + other.w and \
             self.x + self.w > other.x and \
             self.y < other.y + other.h and \
             self.y + self.h > other.y
-        
 
 class Botones:
     def __init__(self,x,y,w,h,col):
@@ -20,6 +19,7 @@ class Botones:
         self.h = h
         self.col = col
 
+        
 class Menu:
     def __init__(self):
         self.BallX = 125
@@ -30,7 +30,7 @@ class Menu:
         self.ColorObjectsBG = 7
         self.Horizontal = True
         self.Vertical = True
-        self.MouseLocation
+        self.MouseLocation = MouseCheckLocation(0,0,3,3)
         self.ButtonLocal = Botones(125,100,10,5,7)
         pyxel.init(250,256,caption="MenuPrincipal",fullscreen=True)
         pyxel.mouse(True)
@@ -74,24 +74,31 @@ class Menu:
             self.BallY -= self.Velocity
         if (self.OrientacionY==False and self.Vertical==False):
             self.BallY += self.Velocity
-        if self.MouseLocation.IsColliding(self.ButtonLocal):
+
+        self.MouseLocation.x = pyxel.mouse_x
+        self.MouseLocation.y = pyxel.mouse_y
+        if self.MouseLocation.IsColliding(self.ButtonLocal) and pyxel.MOUSE_LEFT_BUTTON:
             self.ColorBG = 2
+        else:
+            self.ColorBG = 0
         
     def draw(self):
         pyxel.cls(self.ColorBG)
         #pyxel.bltm(0,0,0,0,0,250,256)
         pyxel.circ(self.BallX,self.BallY,2,self.ColorObjects)
         pyxel.text(121,20,"Pong",self.ColorObjectsBG)
+        pyxel.text(10,10,str(self.MouseLocation.x),7)
+        pyxel.text(10,20,str(self.MouseLocation.y),7)
         pyxel.rect(self.ButtonLocal.x,self.ButtonLocal.y,self.ButtonLocal.w,self.ButtonLocal.h,self.ButtonLocal.col)
         
     
     def ColorDefine(self):
-        if  self.ColorBG == 7 and self.ColorObjects == 0 and self.ColorObjectsBG == 0:
+        """if  self.ColorBG == 7 and self.ColorObjects == 0 and self.ColorObjectsBG == 0:
             self.ColorBG = 0
             self.ColorObjects = 7
             self.ColorObjectsBG = 7
         else:
             self.ColorBG = 7
             self.ColorObjects = 0
-            self.ColorObjectsBG = 0
+            self.ColorObjectsBG = 0"""
 Menu()
