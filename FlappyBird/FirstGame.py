@@ -12,7 +12,7 @@ class PongGame:
         self.GroundX = 0
         self.x = 0
         self.Skin = 0
-        pyxel.load("FlappyResources.pyxres")
+        pyxel.load("Resources/FlappyResources.pyxres")
         pyxel.run(self.update,self.draw)
 
     def update(self):
@@ -42,7 +42,7 @@ class PongGame:
         offset = pyxel.frame_count % 256
         for i in range(2):
             pyxel.blt(i * 256 - offset,151,0,0,16,256,24)
-        pyxel.blt(,100,0,0,40,24,16,0)
+        #pyxel.blt(,100,0,0,40,24,16,0)
         pyxel.blt(25,self.PlayerY,0,self.Skin,0,16,16,0)
         pyxel.circ(self.xMouse,self.yMouse,1,0)
 

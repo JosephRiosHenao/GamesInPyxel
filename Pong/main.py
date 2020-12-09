@@ -35,8 +35,8 @@ class Menu:
         self.Horizontal = True
         self.Vertical = True
         self.BorderLAN = 20
-        self.ServerButton = Botones(105,180,50,20,7,"Server",True)
-        self.ClientButton = Botones(105,180,50,20,7,"Client",True)
+        self.ServerButton = Botones(105,200,50,20,7,"Server",False)
+        self.ClientButton = Botones(105,220,50,20,7,"Client",False)
         self.Hover = 3
         self.MouseLocation = MouseCheckLocation(0,0,3,3)
         self.ButtonLocal = Botones(105,150,50,20,7,"LOCAL 2P",True)
@@ -114,6 +114,11 @@ class Menu:
         pyxel.rectb(self.ButtonLAN.x,self.ButtonLAN.y,self.ButtonLAN.w,self.ButtonLAN.h,self.ButtonLAN.col)
         pyxel.text(self.ButtonLAN.x + self.BorderLAN,self.ButtonLAN.y + 7,self.ButtonLAN.texto,self.ButtonLAN.col)
 
+        if (self.ServerButton.Visible==True and self.ClientButton.Visible==True):
+            pyxel.rectb(self.ServerButton.x,self.ServerButton.y,self.ServerButton.w,self.ServerButton.h,self.ServerButton.col)
+            pyxel.text(self.ServerButton.x + 13,self.ServerButton.y + 7,self.ServerButton.texto,self.ServerButton.col)
+            pyxel.rectb(self.ClientButton.x,self.ClientButton.y,self.ClientButton.w,self.ClientButton.h,self.ClientButton.col)
+            pyxel.text(self.ClientButton.x + 13,self.ClientButton.y + 7,self.ClientButton.texto,self.ClientButton.col)
     def ColorDefine(self):
         """if  self.ColorBG == 7 and self.ColorObjects == 0 and self.ColorObjectsBG == 0:
             self.ColorBG = 0
