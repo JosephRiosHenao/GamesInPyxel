@@ -1,10 +1,12 @@
 import pyxel
 import socket
-from _thread import *
 import threading 
+import logging
+
 
 class conexion:
     def __init__(self):
+        logging.info("Iniciando Conexion")
         self.Conexion = socket.socket()
         self.Host = '192.168.0.105'
         self.Port = 8080
@@ -14,6 +16,7 @@ class conexion:
         print("Termino Programa")
 
     def Consultar(self):
+        logging.info("Buscando conexion")
         while(True):
             Usuario, adr = self.Conexion.accept()
             print("Nueva conexion...")
@@ -130,8 +133,9 @@ class Menu:
                 self.direccion_equipo = socket.gethostbyname(self.nombre_equipo)
                 self.MensajeInformacion = str(self.nombre_equipo)+"\nIP: "+str(self.direccion_equipo)
                 pyxel.flip()
-                t1 = threading.Thread(name="Conexion",target=conexion()) 
-                t1.run()
+                t1 = threading.Thread(target=self.ConfigurarLAN()) 
+                t1.start()
+                logging.info("Continuando con el update")
                 pyxel.quit()
                 PongLANServer()
         else:
@@ -181,6 +185,25 @@ class Menu:
             self.BorderLAN = 15
             self.ServerButton.Visible = True
             self.ClientButton.Visible = True
+    def ConfigurarLAN(self):
+        logging.info("Iniciando Conexion")
+        self.Conexion = socket.socket()
+        self.Host = '192.168.0.105'
+        self.Port = 8080
+        self.Conexion.bind((self.Host,self.Port))
+        self.Conexion.listen(1)
+        self.Consultar()
+        print("Termino Programa")
+        self.Consultar()
+    def Consultar(self):
+        logging.info("Buscando conexion")
+        while(True):
+            Usuario, adr = self.Conexion.accept()
+            print("Nueva conexion...")
+            print(str(adr))
+            Usuario.send("hola".encode())
+            print("Termino hilo")
+            break
 class Ball:
     def __init__(self,x,y,w,h):
         self.x = x
@@ -473,6 +496,10 @@ class PongLANServer:
             self.ColorObjects = 0
             self.ColorObjectsBG = 0
 
-
-Menu()
+if __name__ == '__main__':
+    logging.basicConfig(level=logging.INFO, format='[%(levelname)s] (%(threadName)-s) %(message)s')
+    tMain = threading.Thread(target=Menu())
+    tMain.start()
+    t1 = threading.Thread(target=conexion()) 
+    t1.start()
 
