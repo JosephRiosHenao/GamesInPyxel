@@ -1,32 +1,50 @@
-import pyxel
-
+import threading
+import socket
 class App:
+
+    def contar(self):
+        while (True):
+            self.Usuario, adr = self.Comunicacion.accept()
+            self.conexion = True
+            self.Usuario.send("Hola".encode)
     def __init__(self):
-        pyxel.init(160, 120, caption="Moving Character")
-        pyxel.load("FlappyResources.pyxres")
-        self.coconut = Coconut(20, 20)
-        pyxel.run(self.update, self.draw)
-    def update(self):
-        if pyxel.btnp(pyxel.KEY_Q):
-            pyxel.quit()
-        self.coconut.update()
-    def draw(self):
-        pyxel.cls(0)
-        pyxel.blt(self.coconut.x,self.coconut.y,0,0,0,16,16) # (x, y, img, u, v, width, height)
+        self.Comunicacion = socket.socket
+        self.Comunicacion.bind(('localhost',8080))
+        self.conexion = False
+        hilo1 = threading.Thread(name="Hilo LAN",target=self.contar())
+        hilo1.start()
+        while(self.conexion!=True):
+            print("1")
+"""import threading, time
+class App:
+    vmax_hilos = {}
+    self.Comunicacion = socket.socket
+    self.Comunicacion.bind(('localhost',8080))
+    self.conexion = False
+    def contar(segundos):
+        #Contar hasta un límite de tiempo
+        global vmax_hilos
+        contador = 0
+        inicial = time.time()
+        limite = inicial + segundos
+        nombre = threading.current_thread().getName()
+        while inicial<=limite:
+            contador+=1
+            inicial = time.time()
+            print(nombre, contador)
+            self.Usuario, adr = self.Comunicacion.accept()
+            self.conexion = True
+            self.Usuario.send("Hola".encode)
+        vmax_hilos[nombre] = contador
+        if threading.active_count()==2:
+            print(vmax_hilos)
+            print(threading.enumerate())
 
-class Coconut:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-    def update(self):
-        if pyxel.btn(pyxel.KEY_RIGHT):
-            self.x += 2
-        if pyxel.btn(pyxel.KEY_LEFT):
-            self.x -= 2
-        if pyxel.btn(pyxel.KEY_UP):
-            self.y -= 2
-        if pyxel.btn(pyxel.KEY_DOWN):
-            self.y += 2
-
-
+    segundos = 60
+    hilo = threading.Thread(name='hilo Conexion',
+                                target=contar, 
+                                args=(segundos,))
+    hilo.start()
+    while(self.conexion!=True):
+        print("1")"""
 App()

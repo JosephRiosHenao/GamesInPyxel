@@ -1,6 +1,27 @@
 import pyxel
 import socket
+from _thread import *
+import threading 
 
+class conexion:
+    def __init__(self):
+        self.Conexion = socket.socket()
+        self.Host = '192.168.0.105'
+        self.Port = 8080
+        self.Conexion.bind((self.Host,self.Port))
+        self.Conexion.listen(1)
+        self.Consultar()
+        print("Termino Programa")
+
+    def Consultar(self):
+        while(True):
+            Usuario, adr = self.Conexion.accept()
+            print("Nueva conexion...")
+            print(str(adr))
+            Usuario.send("hola".encode())
+            print("Termino hilo")
+            break
+            
 
 class MouseCheckLocation:
     def __init__(self,x,y,w,h):
@@ -35,13 +56,16 @@ class Menu:
         self.Horizontal = True
         self.Vertical = True
         self.BorderLAN = 20
+        self.nombre_equipo = ""
+        self.MensajeInformacion = ""
+        self.direccion_equipo = ""
         self.ServerButton = Botones(105,200,50,20,7,"Server",False)
         self.ClientButton = Botones(105,220,50,20,7,"Client",False)
         self.Hover = 3
         self.MouseLocation = MouseCheckLocation(0,0,3,3)
         self.ButtonLocal = Botones(105,150,50,20,7,"LOCAL 2P",True)
         self.ButtonLAN = Botones(105,180,50,20,7,"LAN",True)
-        pyxel.init(250,256,caption="MenuPrincipal",fullscreen=True)
+        pyxel.init(250,256,caption="MenuPrincipal",fullscreen=False)
         pyxel.mouse(True)
         pyxel.load("Resources/BG.pyxres")
         pyxel.run(self.update,self.draw)
@@ -102,8 +126,17 @@ class Menu:
         if (self.MouseLocation.IsColliding(self.ServerButton)):
             self.ServerButton.col = self.Hover
             if(pyxel.btnr(pyxel.MOUSE_LEFT_BUTTON)):
+                self.nombre_equipo = socket.gethostname()
+                self.direccion_equipo = socket.gethostbyname(self.nombre_equipo)
+                self.MensajeInformacion = str(self.nombre_equipo)+"\nIP: "+str(self.direccion_equipo)
+                pyxel.flip()
+                t1 = threading.Thread(name="Conexion",target=conexion()) 
+                t1.run()
                 pyxel.quit()
                 PongLANServer()
+        else:
+            self.ServerButton.col = 7
+
     def draw(self):
         pyxel.cls(self.ColorBG)
         pyxel.circ(self.BallX,self.BallY,2,self.ColorObjects)
@@ -117,12 +150,16 @@ class Menu:
         #ButtonLan
         pyxel.rectb(self.ButtonLAN.x,self.ButtonLAN.y,self.ButtonLAN.w,self.ButtonLAN.h,self.ButtonLAN.col)
         pyxel.text(self.ButtonLAN.x + self.BorderLAN,self.ButtonLAN.y + 7,self.ButtonLAN.texto,self.ButtonLAN.col)
+        #TextServer
+        pyxel.rectb(self.ButtonLAN.x,self.ButtonLAN.y,self.ButtonLAN.w,self.ButtonLAN.h,self.ButtonLAN.col)
 
         if (self.ServerButton.Visible==True and self.ClientButton.Visible==True):
             pyxel.rectb(self.ServerButton.x,self.ServerButton.y,self.ServerButton.w,self.ServerButton.h,self.ServerButton.col)
             pyxel.text(self.ServerButton.x + 13,self.ServerButton.y + 7,self.ServerButton.texto,self.ServerButton.col)
             pyxel.rectb(self.ClientButton.x,self.ClientButton.y,self.ClientButton.w,self.ClientButton.h,self.ClientButton.col)
             pyxel.text(self.ClientButton.x + 13,self.ClientButton.y + 7,self.ClientButton.texto,self.ClientButton.col)
+            pyxel.text(100,100,self.MensajeInformacion,7)
+
     def ColorDefine(self):
         """if  self.ColorBG == 7 and self.ColorObjects == 0 and self.ColorObjectsBG == 0:
             self.ColorBG = 0
@@ -305,14 +342,8 @@ class PongLocal2P:
 
 class PongLANServer:
     def __init__(self):
-        """self.LAN = socket.socket()
         self.nombre_equipo = socket.gethostname()
         self.direccion_equipo = socket.gethostbyname(self.nombre_equipo)
-        self.LAN.bind((socket.gethostbyname(self.nombre_equipo),8080))
-        self.LAN.listen(1)
-        self.Usuario = self.LAN.accept()
-        print("Nueva conexion")"""
-        #self.Usuario.send("Hola desde el servidor".encode())
         self.PuntosPlayerOne = 0
         self.PuntosPlayerTwo = 0
         self.OnePlayerY = 63
@@ -335,8 +366,6 @@ class PongLANServer:
         pyxel.init(240,150,caption="PongGame LOCAL",fullscreen=False)
         pyxel.mouse(True)
         pyxel.run(self.update,self.draw)
-    def EncontrarCliente(self):
-        a= 0
     def update(self):
         #Player1 Keys
         if (pyxel.btn(pyxel.KEY_W) and self.OnePlayerY>0):
@@ -433,10 +462,7 @@ class PongLANServer:
         pyxel.rect(15,self.OnePlayerY,4,25,self.ColorObjects)
         pyxel.rect(220,self.TwoPlayerY,4,25,self.ColorObjects)
         pyxel.circ(self.BallX,self.BallY,2,self.ColorObjects)
-        pyxel.text(100,100,str(self.Usuario),7)
-        """if (self.Usuario == None):
-            pyxel.text(100,100,self.ConexionMensaje,7)
-            self.EncontrarCliente()"""
+
     def ColorDefine(self):
         if  self.ColorBG == 7 and self.ColorObjects == 0 and self.ColorObjectsBG == 0:
             self.ColorBG = 0
