@@ -15,14 +15,14 @@ class MouseCheckLocation:
             self.y + self.h > other.y
 
 class Botones:
-    def __init__(self,x,y,w,h,col,texto):
+    def __init__(self,x,y,w,h,col,texto,Visible):
         self.x = x
         self.y = y
         self.w = w
         self.h = h
         self.col = col
         self.texto = texto
-
+        self.Visible = Visible
         
 class Menu:
     def __init__(self):
@@ -34,9 +34,13 @@ class Menu:
         self.ColorObjectsBG = 7
         self.Horizontal = True
         self.Vertical = True
+        self.BorderLAN = 20
+        self.ServerButton = Botones(105,180,50,20,7,"Server",True)
+        self.ClientButton = Botones(105,180,50,20,7,"Client",True)
+        self.Hover = 3
         self.MouseLocation = MouseCheckLocation(0,0,3,3)
-        self.ButtonLocal = Botones(105,150,50,20,7,"LOCAL 2P")
-        self.ButtonLAN = Botones(105,180,50,20,7,"LAN")
+        self.ButtonLocal = Botones(105,150,50,20,7,"LOCAL 2P",True)
+        self.ButtonLAN = Botones(105,180,50,20,7,"LAN",True)
         pyxel.init(250,256,caption="MenuPrincipal",fullscreen=True)
         pyxel.mouse(True)
         pyxel.load("Resources/BG.pyxres")
@@ -83,12 +87,18 @@ class Menu:
         self.MouseLocation.x = pyxel.mouse_x
         self.MouseLocation.y = pyxel.mouse_y
         if (self.MouseLocation.IsColliding(self.ButtonLocal)):
-            self.ButtonLocal.col = 3
+            self.ButtonLocal.col = self.Hover
             if (pyxel.btn(pyxel.MOUSE_LEFT_BUTTON)):
                 pyxel.quit()
                 Pong()
         else:
             self.ButtonLocal.col = 7
+        if self.MouseLocation.IsColliding(self.ButtonLAN):
+            self.ButtonLAN.col = self.Hover
+            if (pyxel.btnr(pyxel.MOUSE_LEFT_BUTTON)):
+                self.LANOptions()
+        else:
+            self.ButtonLAN.col = 7
         
     def draw(self):
         pyxel.cls(self.ColorBG)
@@ -102,7 +112,7 @@ class Menu:
         pyxel.text(self.ButtonLocal.x + 10,self.ButtonLocal.y + 7,self.ButtonLocal.texto,self.ButtonLocal.col)
         #ButtonLan
         pyxel.rectb(self.ButtonLAN.x,self.ButtonLAN.y,self.ButtonLAN.w,self.ButtonLAN.h,self.ButtonLAN.col)
-        pyxel.text(self.ButtonLAN.x + 20,self.ButtonLAN.y + 7,self.ButtonLAN.texto,self.ButtonLAN.col)
+        pyxel.text(self.ButtonLAN.x + self.BorderLAN,self.ButtonLAN.y + 7,self.ButtonLAN.texto,self.ButtonLAN.col)
 
     def ColorDefine(self):
         """if  self.ColorBG == 7 and self.ColorObjects == 0 and self.ColorObjectsBG == 0:
@@ -113,6 +123,18 @@ class Menu:
             self.ColorBG = 7
             self.ColorObjects = 0
             self.ColorObjectsBG = 0"""
+    
+    def LANOptions(self):
+        if ((self.ServerButton.Visible == True) and (self.ClientButton.Visible == True)):
+            self.ButtonLAN.texto = "LAN"
+            self.BorderLAN = 20
+            self.ServerButton.Visible = False
+            self.ClientButton.Visible = False
+        else:
+            self.ButtonLAN.texto = "Close"
+            self.BorderLAN = 15
+            self.ServerButton.Visible = True
+            self.ClientButton.Visible = True
 class Ball:
     def __init__(self,x,y,w,h):
         self.x = x
