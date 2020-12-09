@@ -1,5 +1,5 @@
-import os
 import pyxel
+import socket
 
 
 class MouseCheckLocation:
@@ -90,7 +90,7 @@ class Menu:
             self.ButtonLocal.col = self.Hover
             if (pyxel.btn(pyxel.MOUSE_LEFT_BUTTON)):
                 pyxel.quit()
-                Pong()
+                PongLocal2P()
         else:
             self.ButtonLocal.col = 7
         if self.MouseLocation.IsColliding(self.ButtonLAN):
@@ -99,7 +99,11 @@ class Menu:
                 self.LANOptions()
         else:
             self.ButtonLAN.col = 7
-        
+        if (self.MouseLocation.IsColliding(self.ServerButton)):
+            self.ServerButton.col = self.Hover
+            if(pyxel.btnr(pyxel.MOUSE_LEFT_BUTTON)):
+                pyxel.quit()
+                PongLANServer()
     def draw(self):
         pyxel.cls(self.ColorBG)
         pyxel.circ(self.BallX,self.BallY,2,self.ColorObjects)
@@ -160,7 +164,7 @@ class Players:
             self.x + self.w > other.x and \
             self.y < other.y + other.h and \
             self.y + self.h > other.y
-class Pong:
+class PongLocal2P:
     def __init__(self):
         self.PuntosPlayerOne = 0
         self.PuntosPlayerTwo = 0
@@ -180,7 +184,7 @@ class Pong:
         self.ColorObjectsBG = 7
         self.ColorBG = 0
         self.ColorObjects =7
-        pyxel.init(240,150,caption="PongGame",fullscreen=True)
+        pyxel.init(240,150,caption="PongGame LOCAL",fullscreen=True)
         pyxel.mouse(True)
         pyxel.run(self.update,self.draw)
 
@@ -197,14 +201,14 @@ class Pong:
             self.TwoPlayerY += self.PASOS
         #TocaBordeDerecho
         if (self.BallX>=240):
-            Pong.ColorDefine(self)
+            PongLocal2P.ColorDefine(self)
             self.BallX = 120
             self.BallY = 75
             self.Horizontal = True
             self.PuntosPlayerOne += 1
         #TocaBordeIzquierdo
         if (self.BallX<=0):
-            Pong.ColorDefine(self)
+            PongLocal2P.ColorDefine(self)
             self.BallX = 120
             self.BallY = 75
             self.Horizontal = False
@@ -298,6 +302,151 @@ class Pong:
             self.ColorBG = 7
             self.ColorObjects = 0
             self.ColorObjectsBG = 0
+
+class PongLANServer:
+    def __init__(self):
+        """self.LAN = socket.socket()
+        self.nombre_equipo = socket.gethostname()
+        self.direccion_equipo = socket.gethostbyname(self.nombre_equipo)
+        self.LAN.bind((socket.gethostbyname(self.nombre_equipo),8080))
+        self.LAN.listen(1)
+        self.Usuario = self.LAN.accept()
+        print("Nueva conexion")"""
+        #self.Usuario.send("Hola desde el servidor".encode())
+        self.PuntosPlayerOne = 0
+        self.PuntosPlayerTwo = 0
+        self.OnePlayerY = 63
+        self.TwoPlayerY = 63
+        self.BallX = 120
+        self.BallY = 75
+        self.Velocity = 3
+        self.Score = 0
+        self.MensajeGanador = ""
+        self.Horizontal = True
+        self.Vertical = False
+        self.PASOS = 4
+        self.PlayerOne = Players(15,self.OnePlayerY,4,25)
+        self.PlayerTwo = Players(220,self.TwoPlayerY,4,25)
+        self.BallDetails = Ball(self.BallX,self.BallY,2,2)
+        self.ColorObjectsBG = 7
+        self.ColorBG = 0
+        self.ColorObjects =7
+        self.ConexionMensaje = "Esperando conexion...\n{}".format(self.direccion_equipo)
+        pyxel.init(240,150,caption="PongGame LOCAL",fullscreen=False)
+        pyxel.mouse(True)
+        pyxel.run(self.update,self.draw)
+    def EncontrarCliente(self):
+        a= 0
+    def update(self):
+        #Player1 Keys
+        if (pyxel.btn(pyxel.KEY_W) and self.OnePlayerY>0):
+            self.OnePlayerY -= self.PASOS
+        if (pyxel.btn(pyxel.KEY_S) and self.OnePlayerY<125):
+            self.OnePlayerY += self.PASOS
+        #TocaBordeDerecho
+        if (self.BallX>=240):
+            PongLocal2P.ColorDefine(self)
+            self.BallX = 120
+            self.BallY = 75
+            self.Horizontal = True
+            self.PuntosPlayerOne += 1
+        #TocaBordeIzquierdo
+        if (self.BallX<=0):
+            PongLocal2P.ColorDefine(self)
+            self.BallX = 120
+            self.BallY = 75
+            self.Horizontal = False
+            self.PuntosPlayerTwo += 1
+        #Concional de ganador
+        if (self.PuntosPlayerOne==5 or self.PuntosPlayerTwo==5):
+            if (self.PuntosPlayerOne==5):
+                self.MensajeGanador = "Player ONE win \n\n\n\n R = Reset\n X = Return to Menu\n ESC = Exit"
+            if (self.PuntosPlayerTwo==5):
+                self.MensajeGanador = "Player TWO win \n\n\n\n R = Reset\n X = Return to Menu\n ESC = Exit"
+            pyxel.flip()
+            self.Velocity = 0
+            self.PASOS = 0
+            self.BallX = 120
+            self.BallY = 75
+            self.OnePlayerY = 63
+            self.TwoPlayerY = 63
+            if (pyxel.btn(pyxel.KEY_R)):
+                self.Score = 0
+                self.PuntosPlayerOne = 0
+                self.PuntosPlayerTwo = 0
+                self.MensajeGanador = ""
+                self.PASOS = 4
+                self.Velocity = 3
+                self.OnePlayerY = 63
+                self.TwoPlayerY = 63
+            if (pyxel.btn(pyxel.KEY_X)):
+                pyxel.quit()
+                Menu()
+        #TocaBordes Inferior y Superior
+        if (self.BallY>=150):
+            self.Vertical = True
+        if (self.BallY<=0):
+            self.Vertical = False
+        #SeleccionaDireccion en las 4 diagonales
+        if(self.Horizontal==False and self.Vertical==False):
+            self.OrientacionX = False
+            self.OrientacionY = False
+        if(self.Horizontal==False and self.Vertical==True):
+            self.OrientacionX = False
+            self.OrientacionY = True
+        if(self.Horizontal==True and self.Vertical==False):
+            self.OrientacionX = True
+            self.OrientacionY = False
+        if(self.Horizontal==True and self.Vertical==True):
+            self.OrientacionX = True
+            self.OrientacionY = True
+        #Mueve la pelota
+        if (self.OrientacionX==True and self.Horizontal==True):
+            self.BallX -= self.Velocity
+        if (self.OrientacionX==False and self.Horizontal==False):
+            self.BallX += self.Velocity
+        if (self.OrientacionY==True and self.Vertical==True):    
+            self.BallY -= self.Velocity
+        if (self.OrientacionY==False and self.Vertical==False):
+            self.BallY += self.Velocity
+        #Update position players
+        self.PlayerOne.y = self.OnePlayerY
+        self.PlayerTwo.y = self.TwoPlayerY
+        #Update position ball
+        self.BallDetails.x = self.BallX
+        self.BallDetails.y = self.BallY
+        #Collsions
+        if self.PlayerOne.is_colliding(self.BallDetails):
+            self.Horizontal = False
+            self.Score += 5
+        if self.PlayerTwo.is_colliding(self.BallDetails):
+            self.Horizontal = True
+            self.Score += 5
+
+    def draw(self):
+        pyxel.cls(self.ColorBG)
+        pyxel.line(120,0,120,150,self.ColorObjectsBG)
+        pyxel.text(95,60,str(self.MensajeGanador),self.ColorObjectsBG)
+        pyxel.text(105,10,"Score: "+str(self.Score),self.ColorObjectsBG)
+        pyxel.text(15,10,str(self.PuntosPlayerOne),self.ColorObjectsBG)
+        pyxel.text(220,10,str(self.PuntosPlayerTwo),self.ColorObjectsBG)
+        pyxel.rect(15,self.OnePlayerY,4,25,self.ColorObjects)
+        pyxel.rect(220,self.TwoPlayerY,4,25,self.ColorObjects)
+        pyxel.circ(self.BallX,self.BallY,2,self.ColorObjects)
+        pyxel.text(100,100,str(self.Usuario),7)
+        """if (self.Usuario == None):
+            pyxel.text(100,100,self.ConexionMensaje,7)
+            self.EncontrarCliente()"""
+    def ColorDefine(self):
+        if  self.ColorBG == 7 and self.ColorObjects == 0 and self.ColorObjectsBG == 0:
+            self.ColorBG = 0
+            self.ColorObjects = 7
+            self.ColorObjectsBG = 7
+        else:
+            self.ColorBG = 7
+            self.ColorObjects = 0
+            self.ColorObjectsBG = 0
+
 
 Menu()
 
