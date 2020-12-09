@@ -12,12 +12,13 @@ class MouseCheckLocation:
             self.y + self.h > other.y
 
 class Botones:
-    def __init__(self,x,y,w,h,col):
+    def __init__(self,x,y,w,h,col,texto):
         self.x = x
         self.y = y
         self.w = w
         self.h = h
         self.col = col
+        self.texto = texto
 
         
 class Menu:
@@ -31,7 +32,8 @@ class Menu:
         self.Horizontal = True
         self.Vertical = True
         self.MouseLocation = MouseCheckLocation(0,0,3,3)
-        self.ButtonLocal = Botones(125,100,10,5,7)
+        self.ButtonLocal = Botones(105,150,50,20,7,"LOCAL 2P")
+        self.ButtonLAN = Botones(105,180,50,20,7,"LAN")
         pyxel.init(250,256,caption="MenuPrincipal",fullscreen=True)
         pyxel.mouse(True)
         pyxel.load("Resources/BG.pyxres")
@@ -77,21 +79,27 @@ class Menu:
 
         self.MouseLocation.x = pyxel.mouse_x
         self.MouseLocation.y = pyxel.mouse_y
-        if self.MouseLocation.IsColliding(self.ButtonLocal) and pyxel.MOUSE_LEFT_BUTTON:
+        if (self.MouseLocation.IsColliding(self.ButtonLocal)):
             self.ColorBG = 2
+            if (pyxel.MOUSE_LEFT_BUTTON!=False):
+                self.ColorBG = 3
         else:
             self.ColorBG = 0
         
     def draw(self):
         pyxel.cls(self.ColorBG)
-        #pyxel.bltm(0,0,0,0,0,250,256)
         pyxel.circ(self.BallX,self.BallY,2,self.ColorObjects)
         pyxel.text(121,20,"Pong",self.ColorObjectsBG)
         pyxel.text(10,10,str(self.MouseLocation.x),7)
         pyxel.text(10,20,str(self.MouseLocation.y),7)
-        pyxel.rect(self.ButtonLocal.x,self.ButtonLocal.y,self.ButtonLocal.w,self.ButtonLocal.h,self.ButtonLocal.col)
-        
-    
+        pyxel.text(10,40,str(pyxel.MOUSE_LEFT_BUTTON),7)
+        #ButtonLocal
+        pyxel.rectb(self.ButtonLocal.x,self.ButtonLocal.y,self.ButtonLocal.w,self.ButtonLocal.h,self.ButtonLocal.col)
+        pyxel.text(self.ButtonLocal.x + 10,self.ButtonLocal.y + 7,self.ButtonLocal.texto,self.ButtonLocal.col)
+        #ButtonLan
+        pyxel.rectb(self.ButtonLAN.x,self.ButtonLAN.y,self.ButtonLAN.w,self.ButtonLAN.h,self.ButtonLAN.col)
+        pyxel.text(self.ButtonLAN.x + 20,self.ButtonLAN.y + 7,self.ButtonLAN.texto,self.ButtonLAN.col)
+
     def ColorDefine(self):
         """if  self.ColorBG == 7 and self.ColorObjects == 0 and self.ColorObjectsBG == 0:
             self.ColorBG = 0
