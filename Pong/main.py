@@ -1,4 +1,7 @@
+import os
 import pyxel
+import sys
+
 class MouseCheckLocation:
     def __init__(self,x,y,w,h):
         self.x = x
@@ -80,11 +83,12 @@ class Menu:
         self.MouseLocation.x = pyxel.mouse_x
         self.MouseLocation.y = pyxel.mouse_y
         if (self.MouseLocation.IsColliding(self.ButtonLocal)):
-            self.ColorBG = 2
-            if (pyxel.MOUSE_LEFT_BUTTON!=False):
-                self.ColorBG = 3
+            self.ButtonLocal.col = 3
+            if (pyxel.btn(pyxel.MOUSE_LEFT_BUTTON)):
+                os.system("python Pong/Resources/GameTwoPlayersLocal.py")
+                
         else:
-            self.ColorBG = 0
+            self.ButtonLocal.col = 7
         
     def draw(self):
         pyxel.cls(self.ColorBG)
@@ -92,7 +96,7 @@ class Menu:
         pyxel.text(121,20,"Pong",self.ColorObjectsBG)
         pyxel.text(10,10,str(self.MouseLocation.x),7)
         pyxel.text(10,20,str(self.MouseLocation.y),7)
-        pyxel.text(10,40,str(pyxel.MOUSE_LEFT_BUTTON),7)
+        #pyxel.text(10,40,str(pyxel.MOUSE_RIGHT_BUTTON),7)
         #ButtonLocal
         pyxel.rectb(self.ButtonLocal.x,self.ButtonLocal.y,self.ButtonLocal.w,self.ButtonLocal.h,self.ButtonLocal.col)
         pyxel.text(self.ButtonLocal.x + 10,self.ButtonLocal.y + 7,self.ButtonLocal.texto,self.ButtonLocal.col)
@@ -109,4 +113,7 @@ class Menu:
             self.ColorBG = 7
             self.ColorObjects = 0
             self.ColorObjectsBG = 0"""
+
+
+            
 Menu()
