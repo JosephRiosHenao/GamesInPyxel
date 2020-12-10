@@ -1,10 +1,12 @@
+import time
 import pyxel
 import socket
 import threading 
 import logging
+from tkinter import *
+from concurrent.futures import ThreadPoolExecutor
 
-
-class conexion:
+class conexion():
     def __init__(self):
         logging.info("Iniciando Conexion")
         self.Conexion = socket.socket()
@@ -12,7 +14,7 @@ class conexion:
         self.Port = 8080
         self.Conexion.bind((self.Host,self.Port))
         self.Conexion.listen(1)
-        self.Consultar()
+        consultar = threading.Thread(target=self.Consultar()).start()
         print("Termino Programa")
 
     def Consultar(self):
@@ -48,7 +50,7 @@ class Botones:
         self.texto = texto
         self.Visible = Visible
         
-class Menu:
+class Menu():
     def __init__(self):
         self.BallX = 125
         self.BallY = 20
@@ -62,12 +64,16 @@ class Menu:
         self.nombre_equipo = ""
         self.MensajeInformacion = ""
         self.direccion_equipo = ""
+        self.segundos = 10
         self.ServerButton = Botones(105,200,50,20,7,"Server",False)
         self.ClientButton = Botones(105,220,50,20,7,"Client",False)
         self.Hover = 3
         self.MouseLocation = MouseCheckLocation(0,0,3,3)
         self.ButtonLocal = Botones(105,150,50,20,7,"LOCAL 2P",True)
-        self.ButtonLAN = Botones(105,180,50,20,7,"LAN",True)
+        self.ButtonLAN = Botones(105,180,50,20,7,"LAN",True)                
+        self.nombre_equipo = socket.gethostname()
+        self.direccion_equipo = socket.gethostbyname(self.nombre_equipo)
+        self.MensajeInformacion = str(self.nombre_equipo)+"\nIP: "+str(self.direccion_equipo)
         pyxel.init(250,256,caption="MenuPrincipal",fullscreen=False)
         pyxel.mouse(True)
         pyxel.load("Resources/BG.pyxres")
@@ -129,15 +135,12 @@ class Menu:
         if (self.MouseLocation.IsColliding(self.ServerButton)):
             self.ServerButton.col = self.Hover
             if(pyxel.btnr(pyxel.MOUSE_LEFT_BUTTON)):
-                self.nombre_equipo = socket.gethostname()
-                self.direccion_equipo = socket.gethostbyname(self.nombre_equipo)
-                self.MensajeInformacion = str(self.nombre_equipo)+"\nIP: "+str(self.direccion_equipo)
-                pyxel.flip()
-                t1 = threading.Thread(target=self.ConfigurarLAN()) 
-                t1.start()
                 logging.info("Continuando con el update")
-                pyxel.quit()
-                PongLANServer()
+                while (self.segundos>0):
+                    time.sleep(1)
+                    self.segundos -= 1
+                #pyxel.quit()
+                #PongLANServer()
         else:
             self.ServerButton.col = 7
 
@@ -156,14 +159,14 @@ class Menu:
         pyxel.text(self.ButtonLAN.x + self.BorderLAN,self.ButtonLAN.y + 7,self.ButtonLAN.texto,self.ButtonLAN.col)
         #TextServer
         pyxel.rectb(self.ButtonLAN.x,self.ButtonLAN.y,self.ButtonLAN.w,self.ButtonLAN.h,self.ButtonLAN.col)
+        pyxel.text(100,100,str(self.MensajeInformacion),7)
 
         if (self.ServerButton.Visible==True and self.ClientButton.Visible==True):
             pyxel.rectb(self.ServerButton.x,self.ServerButton.y,self.ServerButton.w,self.ServerButton.h,self.ServerButton.col)
             pyxel.text(self.ServerButton.x + 13,self.ServerButton.y + 7,self.ServerButton.texto,self.ServerButton.col)
             pyxel.rectb(self.ClientButton.x,self.ClientButton.y,self.ClientButton.w,self.ClientButton.h,self.ClientButton.col)
             pyxel.text(self.ClientButton.x + 13,self.ClientButton.y + 7,self.ClientButton.texto,self.ClientButton.col)
-            pyxel.text(100,100,self.MensajeInformacion,7)
-
+            pyxel.text(100,110,str(self.segundos),7)
     def ColorDefine(self):
         """if  self.ColorBG == 7 and self.ColorObjects == 0 and self.ColorObjectsBG == 0:
             self.ColorBG = 0
@@ -497,9 +500,5 @@ class PongLANServer:
             self.ColorObjectsBG = 0
 
 if __name__ == '__main__':
-    logging.basicConfig(level=logging.INFO, format='[%(levelname)s] (%(threadName)-s) %(message)s')
-    tMain = threading.Thread(target=Menu())
-    tMain.start()
-    t1 = threading.Thread(target=conexion()) 
-    t1.start()
-
+    Menu()
+    print("Perfect")
