@@ -4,7 +4,7 @@ import socket
 import threading 
 import logging
 from tkinter import *
-from concurrent.futures import ThreadPoolExecutor
+
 
 class conexion():
     def __init__(self):
@@ -61,9 +61,6 @@ class Menu():
         self.Horizontal = True
         self.Vertical = True
         self.BorderLAN = 20
-        self.nombre_equipo = ""
-        self.MensajeInformacion = ""
-        self.direccion_equipo = ""
         self.segundos = 10
         self.ServerButton = Botones(105,200,50,20,7,"Server",False)
         self.ClientButton = Botones(105,220,50,20,7,"Client",False)
@@ -71,9 +68,6 @@ class Menu():
         self.MouseLocation = MouseCheckLocation(0,0,3,3)
         self.ButtonLocal = Botones(105,150,50,20,7,"LOCAL 2P",True)
         self.ButtonLAN = Botones(105,180,50,20,7,"LAN",True)                
-        self.nombre_equipo = socket.gethostname()
-        self.direccion_equipo = socket.gethostbyname(self.nombre_equipo)
-        self.MensajeInformacion = str(self.nombre_equipo)+"\nIP: "+str(self.direccion_equipo)
         pyxel.init(250,256,caption="MenuPrincipal",fullscreen=False)
         pyxel.mouse(True)
         pyxel.load("Resources/BG.pyxres")
@@ -136,11 +130,8 @@ class Menu():
             self.ServerButton.col = self.Hover
             if(pyxel.btnr(pyxel.MOUSE_LEFT_BUTTON)):
                 logging.info("Continuando con el update")
-                while (self.segundos>0):
-                    time.sleep(1)
-                    self.segundos -= 1
-                #pyxel.quit()
-                #PongLANServer()
+                pyxel.quit()
+                PongLANServer()
         else:
             self.ServerButton.col = 7
 
@@ -159,14 +150,14 @@ class Menu():
         pyxel.text(self.ButtonLAN.x + self.BorderLAN,self.ButtonLAN.y + 7,self.ButtonLAN.texto,self.ButtonLAN.col)
         #TextServer
         pyxel.rectb(self.ButtonLAN.x,self.ButtonLAN.y,self.ButtonLAN.w,self.ButtonLAN.h,self.ButtonLAN.col)
-        pyxel.text(100,100,str(self.MensajeInformacion),7)
+        #pyxel.text(100,50,"HOST\n\n"+str(self.MensajeInformacionHost)+"\n\n\n\nCLIENT\n\n"+str(self.MensajeInformacionClient),7)
 
         if (self.ServerButton.Visible==True and self.ClientButton.Visible==True):
             pyxel.rectb(self.ServerButton.x,self.ServerButton.y,self.ServerButton.w,self.ServerButton.h,self.ServerButton.col)
             pyxel.text(self.ServerButton.x + 13,self.ServerButton.y + 7,self.ServerButton.texto,self.ServerButton.col)
             pyxel.rectb(self.ClientButton.x,self.ClientButton.y,self.ClientButton.w,self.ClientButton.h,self.ClientButton.col)
             pyxel.text(self.ClientButton.x + 13,self.ClientButton.y + 7,self.ClientButton.texto,self.ClientButton.col)
-            pyxel.text(100,110,str(self.segundos),7)
+            #pyxel.text(100,110,str(self.segundos),7)
     def ColorDefine(self):
         """if  self.ColorBG == 7 and self.ColorObjects == 0 and self.ColorObjectsBG == 0:
             self.ColorBG = 0
@@ -188,25 +179,7 @@ class Menu():
             self.BorderLAN = 15
             self.ServerButton.Visible = True
             self.ClientButton.Visible = True
-    def ConfigurarLAN(self):
-        logging.info("Iniciando Conexion")
-        self.Conexion = socket.socket()
-        self.Host = '192.168.0.105'
-        self.Port = 8080
-        self.Conexion.bind((self.Host,self.Port))
-        self.Conexion.listen(1)
-        self.Consultar()
-        print("Termino Programa")
-        self.Consultar()
-    def Consultar(self):
-        logging.info("Buscando conexion")
-        while(True):
-            Usuario, adr = self.Conexion.accept()
-            print("Nueva conexion...")
-            print(str(adr))
-            Usuario.send("hola".encode())
-            print("Termino hilo")
-            break
+
 class Ball:
     def __init__(self,x,y,w,h):
         self.x = x
@@ -368,8 +341,11 @@ class PongLocal2P:
 
 class PongLANServer:
     def __init__(self):
-        self.nombre_equipo = socket.gethostname()
-        self.direccion_equipo = socket.gethostbyname(self.nombre_equipo)
+        self.ConexionMensajeMostar = 0
+        self.nombre_equipo = ""
+        self.MensajeInformacionHost = ""
+        self.MensajeInformacionClient = ""
+        self.direccion_equipo = ""
         self.PuntosPlayerOne = 0
         self.PuntosPlayerTwo = 0
         self.OnePlayerY = 63
@@ -388,8 +364,12 @@ class PongLANServer:
         self.ColorObjectsBG = 7
         self.ColorBG = 0
         self.ColorObjects =7
+        self.nombre_equipo = socket.gethostname()
+        self.direccion_equipo = socket.gethostbyname(self.nombre_equipo)
+        self.MensajeInformacionHost = str(self.nombre_equipo)+"\nIP: "+str(self.direccion_equipo)
         self.ConexionMensaje = "Esperando conexion...\n{}".format(self.direccion_equipo)
-        pyxel.init(240,150,caption="PongGame LOCAL",fullscreen=False)
+        self.ConfigurarLAN()
+        pyxel.init(240,150,caption="PongGame LAN Server",fullscreen=False)
         pyxel.mouse(True)
         pyxel.run(self.update,self.draw)
     def update(self):
@@ -477,6 +457,9 @@ class PongLANServer:
         if self.PlayerTwo.is_colliding(self.BallDetails):
             self.Horizontal = True
             self.Score += 5
+        if pyxel.frame_count == 1:
+            self.Consultar()
+
 
     def draw(self):
         pyxel.cls(self.ColorBG)
@@ -488,6 +471,7 @@ class PongLANServer:
         pyxel.rect(15,self.OnePlayerY,4,25,self.ColorObjects)
         pyxel.rect(220,self.TwoPlayerY,4,25,self.ColorObjects)
         pyxel.circ(self.BallX,self.BallY,2,self.ColorObjects)
+        pyxel.text(130,50,self.MensajeInformacionHost,7)
 
     def ColorDefine(self):
         if  self.ColorBG == 7 and self.ColorObjects == 0 and self.ColorObjectsBG == 0:
@@ -498,6 +482,22 @@ class PongLANServer:
             self.ColorBG = 7
             self.ColorObjects = 0
             self.ColorObjectsBG = 0
+    def ConfigurarLAN(self):
+        logging.info("Iniciando Conexion")
+        self.Conexion = socket.socket()
+        self.Host = '192.168.0.105'
+        self.Port = 8080
+        self.Conexion.bind((self.Host,self.Port))
+        self.Conexion.listen(1)
+        print("Encontre usuario")
+    def Consultar(self):
+        logging.info("Buscando conexion")
+        self.Usuario, adr = self.Conexion.accept()
+        self.MensajeInformacionClient = str(adr)
+        print("Nueva conexion...")
+        print(str(adr))
+        self.Usuario.send("hola".encode())
+        print("Termino hilo")
 
 if __name__ == '__main__':
     Menu()
