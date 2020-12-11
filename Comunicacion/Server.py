@@ -30,31 +30,33 @@ class App:
             self.Online = False
 
         if(self.Online == True):
-            self.EnviarDatos()
-            self.RecibirDatos()
+            te = threading.Thread(target = self.EnviarDatos(), daemon = True).start()
+            tr = threading.Thread(target = self.RecibirDatos(), daemon = True).start()
+            #self.EnviarDatos()
+            #self.RecibirDatos()
 
 
     def draw(self):
         pyxel.cls(0)
         pyxel.rect(10,self.Player1Y,5,5,7)
-        pyxel.rect(90,self.Player2Y,5,5,7)
+        pyxel.rect(190,self.Player2Y,5,5,7)
 
     def ConfigurarServer(self):
         self.NombreDeLaMaquina = socket.gethostname()
         self.HOST = socket.gethostbyname(self.NombreDeLaMaquina)
         print(self.HOST)
         self.Server = socket.socket()
-        self.Server.bind((self.HOST,8080))
+        self.Server.bind((self.HOST,1234))
         self.Server.listen(1)
         
     def AceptarCliente(self):
         self.Cliente, adr = self.Server.accept()
 
     def RecibirDatos(self):
-        self.Player2Y = int(self.Cliente.recv(1024).decode())
+        self.Player2Y = int(self.Cliente.recv(128).decode('utf-8'))
     
     def EnviarDatos(self):
-        self.Cliente.send(str(self.Player1Y).encode())
+        self.Cliente.send(str(self.Player1Y).encode('utf-8'))
 
 
 App()
