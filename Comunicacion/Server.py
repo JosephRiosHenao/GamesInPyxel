@@ -18,18 +18,21 @@ class App:
 
         if(pyxel.btn(pyxel.KEY_S)):
             self.Player1Y += 2
+
         if (self.Online == False):
             if(pyxel.btnr(pyxel.KEY_0)):
                 t1 = threading.Thread(target=self.AceptarCliente()).start()
+                #t2 = threading.Thread(target=self.EnviarDatos()).start()
                 self.Online = True
 
-            if(pyxel.btnr(pyxel.KEY_Q)):
-                self.Cliente.close()
-                self.Online = False
+        if(pyxel.btnr(pyxel.KEY_Q)):
+            self.Cliente.close()
+            self.Online = False
 
-            if (self.Online == True):
-                #self.RecibirDatos()
-                self.EnviarDatos()
+        if(self.Online == True):
+            self.EnviarDatos()
+            self.RecibirDatos()
+
 
     def draw(self):
         pyxel.cls(0)
@@ -47,8 +50,8 @@ class App:
     def AceptarCliente(self):
         self.Cliente, adr = self.Server.accept()
 
-    #def RecibirDatos(self):
-    #    self.Player2Y = int(self.Cliente.recv(1024).decode('utf-8'))
+    def RecibirDatos(self):
+        self.Player2Y = int(self.Cliente.recv(1024).decode())
     
     def EnviarDatos(self):
         self.Cliente.send(str(self.Player1Y).encode())
