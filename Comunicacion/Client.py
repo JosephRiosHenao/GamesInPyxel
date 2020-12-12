@@ -8,17 +8,20 @@ class App:
         self.Player2Y = 100
         self.Online = False
         self.ConfigurarCliente()
+        #pyxel.mouse(True)
         pyxel.init(200,200)
         pyxel.run(self.update,self.draw)
     def update(self):
         if(pyxel.btn(pyxel.KEY_UP)):
             self.Player2Y -= 2
+
         if(pyxel.btn(pyxel.KEY_DOWN)):
             self.Player2Y += 2
+
         if(self.Online == False):
             if(pyxel.btnr(pyxel.KEY_0)):
-                t1 = threading.Thread(target = self.Conectar()).start()
-                tr = threading.Thread(target = self.RecibirDatos(), daemon = True).start()
+                self.t1 = threading.Thread(target = self.Conectar()).start()
+
                 #t2 = threading.Thread(target = self.RecibirDatos()).start()
                 self.Online = True
         if(pyxel.btnr(pyxel.KEY_Q)):
@@ -26,10 +29,9 @@ class App:
             self.Online = False
 
         if(self.Online == True):
-            #tr = threading.Thread(target = self.RecibirDatos(), daemon = True).start()
-            te = threading.Thread(target = self.EnviarDatos(), daemon = True).start()            
-            #self.RecibirDatos()
-            #self.EnviarDatos()
+            self.ComunicacionBasica()
+            #self.Comunicacion = threading.Thread(target = self.ComunicacionBasica(), daemon = True).start()
+            #Comunicacion.start()
 
 
     def draw(self):
@@ -38,24 +40,21 @@ class App:
         pyxel.rect(10,self.Player1Y,5,5,0)
 
     def ConfigurarCliente(self):
-        self.Cliente = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+        self.Cliente = socket.socket()
 
     def Conectar(self):
-        
         self.NombreDeLaMaquina  = socket.gethostname()
         self.IP = "192.168.0.105"#socket.gethostbyname(self.NombreDeLaMaquina) 
-        try:
-            self.Cliente.connect((self.IP,1234))
-        except ConnectionRefusedError:
-            print("No se puede conectar")
-
+        self.Cliente.connect((self.IP,8080))
 
     def RecibirDatos(self):
-        while (self.Online == True):
-            self.Player1Y = int(self.Cliente.recv(128).decode('utf-8'))
+        self.Player1Y = int(self.Cliente.recv(1000).decode('utf-8'))
 
     def EnviarDatos(self):
         self.Cliente.send(str(self.Player2Y).encode('utf-8'))
-        #
-if  __name__ == "__main__":
-    App()
+
+    def ComunicacionBasica(self):
+        while(self.Online):
+            self.RecibirDatos()
+            self.EnviarDatos()
+App()

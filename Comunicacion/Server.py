@@ -21,7 +21,7 @@ class App:
 
         if (self.Online == False):
             if(pyxel.btnr(pyxel.KEY_0)):
-                t1 = threading.Thread(target=self.AceptarCliente()).start()
+                self.t1 = threading.Thread(target=self.AceptarCliente()).start()
                 #t2 = threading.Thread(target=self.EnviarDatos()).start()
                 self.Online = True
 
@@ -30,8 +30,9 @@ class App:
             self.Online = False
 
         if(self.Online == True):
-            te = threading.Thread(target = self.EnviarDatos(), daemon = True).start()
-            tr = threading.Thread(target = self.RecibirDatos(), daemon = True).start()
+            self.ComunicacionBasica()
+            #self.Comunicacion = threading.Thread(target = self.ComunicacionBasica(),daemon = True).start()
+            #Comunicacion.start()
             #self.EnviarDatos()
             #self.RecibirDatos()
 
@@ -46,17 +47,18 @@ class App:
         self.HOST = socket.gethostbyname(self.NombreDeLaMaquina)
         print(self.HOST)
         self.Server = socket.socket()
-        self.Server.bind((self.HOST,1234))
+        self.Server.bind((self.HOST,8080))
         self.Server.listen(1)
         
     def AceptarCliente(self):
         self.Cliente, adr = self.Server.accept()
 
     def RecibirDatos(self):
-        self.Player2Y = int(self.Cliente.recv(128).decode('utf-8'))
+        self.Player2Y = int(self.Cliente.recv(1000).decode('utf-8'))
     
     def EnviarDatos(self):
         self.Cliente.send(str(self.Player1Y).encode('utf-8'))
-
-
+    def ComunicacionBasica(self):
+        self.RecibirDatos()
+        self.EnviarDatos()
 App()
