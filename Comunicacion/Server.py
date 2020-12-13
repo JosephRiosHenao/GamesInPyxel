@@ -41,6 +41,7 @@ class App:
         pyxel.cls(0)
         pyxel.rect(10,self.Player1Y,5,5,7)
         pyxel.rect(190,self.Player2Y,5,5,7)
+        pyxel.text(94,99,"Server",7)
 
     def ConfigurarServer(self):
         self.NombreDeLaMaquina = socket.gethostname()
@@ -58,7 +59,10 @@ class App:
     
     def EnviarDatos(self):
         self.Cliente.send(str(self.Player1Y).encode('utf-8'))
+
     def ComunicacionBasica(self):
-        self.RecibirDatos()
-        self.EnviarDatos()
+        #daemon true funciono, el sv presentas relentizacion
+        self.RecibirThread = threading.Thread(target=self.RecibirDatos(),daemon=False)
+        self.RecibirThread.start()
+        #self.EnviarDatos()
 App()

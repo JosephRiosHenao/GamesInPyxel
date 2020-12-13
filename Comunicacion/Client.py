@@ -37,6 +37,7 @@ class App:
     def draw(self):
         pyxel.cls(7)
         pyxel.rect(190,self.Player2Y,5,5,0)
+        pyxel.text(94,99,"Client",0)
         pyxel.rect(10,self.Player1Y,5,5,0)
 
     def ConfigurarCliente(self):
@@ -54,7 +55,8 @@ class App:
         self.Cliente.send(str(self.Player2Y).encode('utf-8'))
 
     def ComunicacionBasica(self):
-        while(self.Online):
-            self.RecibirDatos()
-            self.EnviarDatos()
+        #while(self.Online):
+            #self.RecibirDatos()
+            self.EnviarThrad = threading.Thread(target=self.EnviarDatos(),daemon=False)
+            self.EnviarThrad.start()
 App()
