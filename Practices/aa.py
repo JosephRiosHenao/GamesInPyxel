@@ -1,50 +1,40 @@
-import threading
-import socket
-class App:
+"""
+This is a pure Python implementation of the selection sort algorithm
+For doctests run following command:
+python -m doctest -v selection_sort.py
+or
+python3 -m doctest -v selection_sort.py
+For manual testing run:
+python selection_sort.py
+"""
 
-    def contar(self):
-        while (True):
-            self.Usuario, adr = self.Comunicacion.accept()
-            self.conexion = True
-            self.Usuario.send("Hola".encode)
-    def __init__(self):
-        self.Comunicacion = socket.socket
-        self.Comunicacion.bind(('localhost',8080))
-        self.conexion = False
-        hilo1 = threading.Thread(name="Hilo LAN",target=self.contar())
-        hilo1.start()
-        while(self.conexion!=True):
-            print("1")
-"""import threading, time
-class App:
-    vmax_hilos = {}
-    self.Comunicacion = socket.socket
-    self.Comunicacion.bind(('localhost',8080))
-    self.conexion = False
-    def contar(segundos):
-        #Contar hasta un límite de tiempo
-        global vmax_hilos
-        contador = 0
-        inicial = time.time()
-        limite = inicial + segundos
-        nombre = threading.current_thread().getName()
-        while inicial<=limite:
-            contador+=1
-            inicial = time.time()
-            print(nombre, contador)
-            self.Usuario, adr = self.Comunicacion.accept()
-            self.conexion = True
-            self.Usuario.send("Hola".encode)
-        vmax_hilos[nombre] = contador
-        if threading.active_count()==2:
-            print(vmax_hilos)
-            print(threading.enumerate())
 
-    segundos = 60
-    hilo = threading.Thread(name='hilo Conexion',
-                                target=contar, 
-                                args=(segundos,))
-    hilo.start()
-    while(self.conexion!=True):
-        print("1")"""
-App()
+def selection_sort(collection):
+    """Pure implementation of the selection sort algorithm in Python
+    :param collection: some mutable ordered collection with heterogeneous
+    comparable items inside
+    :return: the same collection ordered by ascending
+    Examples:
+    >>> selection_sort([0, 5, 3, 2, 2])
+    [0, 2, 2, 3, 5]
+    >>> selection_sort([])
+    []
+    >>> selection_sort([-2, -5, -45])
+    [-45, -5, -2]
+    """
+
+    length = len(collection)
+    for i in range(length - 1):
+        least = i
+        for k in range(i + 1, length):
+            if collection[k] < collection[least]:
+                least = k
+        if least != i:
+            collection[least], collection[i] = (collection[i], collection[least])
+    return collection
+
+
+if __name__ == "__main__":
+    user_input = input("Enter numbers separated by a comma:\n").strip()
+    unsorted = [int(item) for item in user_input.split(",")]
+    print(selection_sort(unsorted))
