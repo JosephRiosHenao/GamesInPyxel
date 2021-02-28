@@ -3,8 +3,6 @@ import pyxel
 import socket
 import threading 
 import logging
-from tkinter import *
-
 
 class conexion():
     def __init__(self):
