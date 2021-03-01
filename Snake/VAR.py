@@ -2,4 +2,4 @@
 WIDTH = 192
 HEIGHT = 128
 
-RESOURCES = "Resources/resources.pyxres"
+RESOURCES = "Assets/resources.pyxres"
