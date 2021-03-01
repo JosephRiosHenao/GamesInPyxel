@@ -1,11 +1,11 @@
-from Snake.VAR import *
+from VAR import *
 import pyxel
 
 class Snake():
     def __init__(self,feed):
         pass
     
-class SnakeGame():
+class App():
     
     def __init__(self,WIDHT,HEIGHT):
         
@@ -28,5 +28,5 @@ class SnakeGame():
     def draw(self):
         pyxel.cls(1)
         
-SnakeGame(WIDTH,HEIGHT)
+App(WIDTH,HEIGHT)
         
