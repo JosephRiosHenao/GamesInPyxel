@@ -7,7 +7,6 @@ import collections
 WIDTH = 192
 HEIGHT = 128
 
-
 SPEED = 5.9
 
 RESOURCES = "Assets/resources.pyxres"
@@ -16,6 +15,21 @@ class Direction(enum.Enum):
     LEFT  = 1
     DOWN  = 2
     UP    = 3
+    
+class GameState(enum.Enum):
+    RUNNING  = 0
+    GAMEOVER = 1
+
+class SceneGame:
+    def __init__(self):
+        self.tm = 0
+        self.u = 0
+        self.v = 0
+        self.w = 24
+        self.h = 16
+        
+    def draw(self):
+        pyxel.bltm(0,0,self.tm,self.u,self.v,self.w,self.h,0)
 class Coin():
     
     def __init__(self,x,y):
@@ -91,41 +105,44 @@ class App():
                     scale      = 8 )
         
         pyxel.load(RESOURCES)
-        
+                
         self.coin = Coin(WIDHT/2,HEIGHT/2)
+        
         self.snake = []
         
-        self.snake.append(SnakeSection(16,0,isHead=True))
-        self.snake.append(SnakeSection(8,0))
-        self.snake.append(SnakeSection(0,0))
-        self.snakeDirection: Direction = Direction.RIGHT
-        self.snakeSpeed = SPEED
         self.queueSnakeInput = collections.deque()
-        
-        self.timeLastFrame = time.time()
-        self.timeSinceLastMove = 0
-        self.dt = 0
+        self.scene = SceneGame()
         
         pyxel.mouse(True)
+        
+        self.startNewGame()
+        
         pyxel.run(self.update,self.draw)
         
     def update(self):
-        timeThisFrame = time.time()
-        self.dt = timeThisFrame - self.timeLastFrame
-        self.timeLastFrame = timeThisFrame
-        self.timeSinceLastMove += self.dt
         
         self.chackInput()
 
-        if self.timeSinceLastMove >= 1/self.snakeSpeed:
-            self.timeSinceLastMove = 0
-            self.moveSnake()
-        
-        self.checkColisions()
+        if self.currentGameState == GameState.GAMEOVER:
+            if (pyxel.btnp(pyxel.KEY_R)==True):
+                self.startNewGame()
+                
+        if self.currentGameState == GameState.RUNNING:
+            timeThisFrame = time.time()
+            self.dt = timeThisFrame - self.timeLastFrame
+            self.timeLastFrame = timeThisFrame
+            self.timeSinceLastMove += self.dt
+            
+            if self.timeSinceLastMove >= 1/self.snakeSpeed:
+                self.timeSinceLastMove = 0
+                self.moveSnake()
+            
+            self.checkColisions()
             
 
     def draw(self):
         pyxel.cls(1)
+        self.scene.draw()
         self.coin.draw()
         for s in self.snake:
             s.draw(self.snakeDirection)
@@ -157,7 +174,7 @@ class App():
                     self.addSection()
                     self.coin.randomPosition() 
                     checkPositionCoin = True
-                    self.snakeSpeed += (self.snakeSpeed * 0.1)
+                    self.snakeSpeed += (self.snakeSpeed * 0.01)
                 continue
             
             currentLocationX = s.x
@@ -173,15 +190,7 @@ class App():
                 self.coin.randomPosition()
         
     def addSection(self):
-        if self.snakeDirection == Direction.RIGHT:
-            self.snake.append(SnakeSection(self.snake[-1].x - self.snake[-1].w, self.snake[-1].y))
-        if self.snakeDirection == Direction.LEFT:
-            self.snake.append(SnakeSection(self.snake[-1].x + self.snake[-1].w, self.snake[-1].y))
-        if self.snakeDirection == Direction.UP:
-            self.snake.append(SnakeSection(self.snake[-1].x, self.snake[-1].y - self.snake[-1].h))
-        if self.snakeDirection == Direction.DOWN:
-            self.snake.append(SnakeSection(self.snake[-1].x, self.snake[-1].y + self.snake[-1].h))
-        #min 45:39
+        self.snake.append(SnakeSection(self.snake[-1].x, self.snake[-1].y))
         
     def chackInput(self):
         
@@ -226,8 +235,28 @@ class App():
         for s in self.snake:
             if s == self.snake[0]: continue
             if self.isColliding(s) == True:
-                pass
+                self.currentGameState = GameState.GAMEOVER
                 
+    def startNewGame(self):
+        
+        self.snake.clear()
+        self.snakeSpeed = SPEED
+        self.snake.append(SnakeSection(32,pyxel.height/2,isHead=True))
+        self.snake.append(SnakeSection(24,pyxel.height/2))
+        self.snake.append(SnakeSection(18,pyxel.height/2))
+        self.snakeDirection: Direction = Direction.RIGHT
+        
+        self.coin.x = pyxel.width/2
+        self.coin.y = pyxel.height/2
+        
+        self.timeLastFrame = time.time()
+        self.timeSinceLastMove = 0
+        self.dt = 0
+        
+        self.queueSnakeInput.clear()
+        
+        self.currentGameState = GameState.RUNNING
+
 
 App(WIDTH,HEIGHT)
-        
+#1:33:25        
