@@ -75,7 +75,7 @@ class App():
         pyxel.init( width      = WIDHT,
                     height     = HEIGHT,
                     caption    = "Snake",
-                    fps        = 60,
+                    fps        = 5,
                     fullscreen = True, 
                     scale      = 8 )
         
@@ -93,19 +93,60 @@ class App():
         pyxel.run(self.update,self.draw)
         
     def update(self):        
-        if (pyxel.btnp(pyxel.KEY_SPACE==True)):
+        if (pyxel.btnp(pyxel.KEY_SPACE)==True):
             self.coin.randomPosition()
+            self.addSection()
+        if (pyxel.btn(pyxel.KEY_W)==True):
+            self.snakeDirection = Direction.UP
+        if (pyxel.btn(pyxel.KEY_S)==True):
+            self.snakeDirection = Direction.DOWN
+        if (pyxel.btn(pyxel.KEY_A)==True):
+            self.snakeDirection = Direction.LEFT
+        if (pyxel.btn(pyxel.KEY_D)==True):
+            self.snakeDirection = Direction.RIGHT
+            
+        self.moveSnake()
         
 
     def draw(self):
         pyxel.cls(1)
         self.coin.draw()
-        for i in self.snake:
-            i.draw(self.snakeDirection)
+        for s in self.snake:
+            s.draw(self.snakeDirection)
             
     def moveSnake(self):
         previousLocationX = self.snake[0].x
         previousLocationY = self.snake[0].y
-        #min 41:41
+        
+        if self.snakeDirection == Direction.RIGHT:
+            self.snake[0].x += self.snake[0].w
+        if self.snakeDirection == Direction.LEFT:
+            self.snake[0].x -= self.snake[0].w
+        if self.snakeDirection == Direction.UP:
+            self.snake[0].y -= self.snake[0].h
+        if self.snakeDirection == Direction.DOWN:
+            self.snake[0].y += self.snake[0].h
+            
+        for s in self.snake:
+            if s == self.snake[0]: continue
+            currentLocationX = s.x
+            currentLocationY = s.y
+            
+            s.x = previousLocationX
+            s.y = previousLocationY
+            
+            previousLocationX = currentLocationX
+            previousLocationY = currentLocationY
+        
+    def addSection(self):
+        if self.snakeDirection == Direction.RIGHT:
+            self.snake.append(SnakeSection(self.snake[-1].x - self.snake[-1].w, self.snake[-1].y))
+        if self.snakeDirection == Direction.LEFT:
+            self.snake.append(SnakeSection(self.snake[-1].x + self.snake[-1].w, self.snake[-1].y))
+        if self.snakeDirection == Direction.UP:
+            self.snake.append(SnakeSection(self.snake[-1].x, self.snake[-1].y - self.snake[-1].h))
+        if self.snakeDirection == Direction.DOWN:
+            self.snake.append(SnakeSection(self.snake[-1].x, self.snake[-1].y + self.snake[-1].h))
+        #min 45:39
 App(WIDTH,HEIGHT)
         
