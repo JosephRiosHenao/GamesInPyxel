@@ -51,21 +51,22 @@ class SnakeSection():
             
             if direction == Direction.RIGHT:
                 spriteX = 8
-                spriteY = 8
+                spriteY = 0
             if direction == Direction.LEFT:
                 spriteX = 8
-                spriteY = 8
+                spriteY = 0
                 width = width * -1
                 
             if direction == Direction.UP:
                 spriteX = 0
                 spriteY = 8
+                height = height * -1
+
             if direction == Direction.DOWN:
                 spriteX = 0
                 spriteY = 8
-                height = height * -1
                 
-            
+        pyxel.blt(self.x,self.y,0,spriteX,spriteY,width,height,0)
         
 class App():
     
@@ -81,6 +82,12 @@ class App():
         pyxel.load(RESOURCES)
         
         self.coin = Coin(WIDHT/2,HEIGHT/2)
+        self.snake = []
+        
+        self.snake.append(SnakeSection(16,0,isHead=True))
+        self.snake.append(SnakeSection(8,0))
+        self.snake.append(SnakeSection(0,0))
+        self.snakeDirection: Direction = Direction.RIGHT
         
         pyxel.mouse(True)
         pyxel.run(self.update,self.draw)
@@ -88,10 +95,17 @@ class App():
     def update(self):        
         if (pyxel.btnp(pyxel.KEY_SPACE==True)):
             self.coin.randomPosition()
+        
 
     def draw(self):
         pyxel.cls(1)
         self.coin.draw()
-        
+        for i in self.snake:
+            i.draw(self.snakeDirection)
+            
+    def moveSnake(self):
+        previousLocationX = self.snake[0].x
+        previousLocationY = self.snake[0].y
+        #min 41:41
 App(WIDTH,HEIGHT)
         
