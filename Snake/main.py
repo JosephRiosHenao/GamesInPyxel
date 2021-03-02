@@ -2,9 +2,11 @@ import pyxel
 import random
 import enum
 import time
+import collections
 
 WIDTH = 192
 HEIGHT = 128
+
 
 SPEED = 5.9
 
@@ -98,6 +100,7 @@ class App():
         self.snake.append(SnakeSection(0,0))
         self.snakeDirection: Direction = Direction.RIGHT
         self.snakeSpeed = SPEED
+        self.queueSnakeInput = collections.deque()
         
         self.timeLastFrame = time.time()
         self.timeSinceLastMove = 0
@@ -111,21 +114,14 @@ class App():
         self.dt = timeThisFrame - self.timeLastFrame
         self.timeLastFrame = timeThisFrame
         self.timeSinceLastMove += self.dt
+        
+        self.chackInput()
+
         if self.timeSinceLastMove >= 1/self.snakeSpeed:
             self.timeSinceLastMove = 0
             self.moveSnake()
-                
-        if (pyxel.btnp(pyxel.KEY_SPACE)==True):
-            self.coin.randomPosition()
-            self.addSection()
-        if (pyxel.btn(pyxel.KEY_W)==True and self.snakeDirection != Direction.DOWN):
-            self.snakeDirection = Direction.UP
-        if (pyxel.btn(pyxel.KEY_S)==True and self.snakeDirection != Direction.UP):
-            self.snakeDirection = Direction.DOWN
-        if (pyxel.btn(pyxel.KEY_A)==True and self.snakeDirection != Direction.RIGHT):
-            self.snakeDirection = Direction.LEFT
-        if (pyxel.btn(pyxel.KEY_D)==True and self.snakeDirection != Direction.LEFT):
-            self.snakeDirection = Direction.RIGHT
+        
+        self.checkColisions()
             
 
     def draw(self):
@@ -133,10 +129,14 @@ class App():
         self.coin.draw()
         for s in self.snake:
             s.draw(self.snakeDirection)
+
             
     def moveSnake(self):
         
-        checkPosition = False
+        if len(self.queueSnakeInput):
+            self.snakeDirection = self.queueSnakeInput.popleft()
+        
+        checkPositionCoin = False
         
         previousLocationX = self.snake[0].x
         previousLocationY = self.snake[0].y
@@ -156,7 +156,7 @@ class App():
                 if self.coin.IsColliding(s):
                     self.addSection()
                     self.coin.randomPosition() 
-                    checkPosition = True
+                    checkPositionCoin = True
                     self.snakeSpeed += (self.snakeSpeed * 0.1)
                 continue
             
@@ -169,7 +169,7 @@ class App():
             previousLocationX = currentLocationX
             previousLocationY = currentLocationY
             
-            if self.coin.IsColliding(s) and checkPosition:
+            if self.coin.IsColliding(s) and checkPositionCoin:
                 self.coin.randomPosition()
         
     def addSection(self):
@@ -182,5 +182,52 @@ class App():
         if self.snakeDirection == Direction.DOWN:
             self.snake.append(SnakeSection(self.snake[-1].x, self.snake[-1].y + self.snake[-1].h))
         #min 45:39
+        
+    def chackInput(self):
+        
+        if (pyxel.btnp(pyxel.KEY_SPACE)==True):
+            self.coin.randomPosition()
+            self.addSection()
+        
+        if len(self.queueSnakeInput) == 0:
+            if (pyxel.btnp(pyxel.KEY_W)==True and self.snakeDirection != Direction.UP and self.snakeDirection != Direction.DOWN):
+                self.queueSnakeInput.append(Direction.UP)
+
+            elif (pyxel.btnp(pyxel.KEY_S)==True and self.snakeDirection != Direction.UP and self.snakeDirection != Direction.DOWN):
+                self.queueSnakeInput.append(Direction.DOWN)
+                
+            elif (pyxel.btnp(pyxel.KEY_A)==True and self.snakeDirection != Direction.RIGHT and self.snakeDirection != Direction.LEFT):
+                self.queueSnakeInput.append(Direction.LEFT)
+                
+            elif (pyxel.btnp(pyxel.KEY_D)==True and self.snakeDirection != Direction.RIGHT and self.snakeDirection != Direction.LEFT):
+                self.queueSnakeInput.append(Direction.RIGHT)
+                
+        else:
+            
+            if (pyxel.btnp(pyxel.KEY_W)==True and self.queueSnakeInput[-1] != Direction.UP and self.queueSnakeInput[-1] != Direction.DOWN):
+                self.queueSnakeInput.append(Direction.UP)
+
+            elif (pyxel.btnp(pyxel.KEY_S)==True and self.queueSnakeInput[-1] != Direction.UP and self.queueSnakeInput[-1] != Direction.DOWN):
+                self.queueSnakeInput.append(Direction.DOWN)
+                
+            elif (pyxel.btnp(pyxel.KEY_A)==True and self.queueSnakeInput[-1] != Direction.RIGHT and self.queueSnakeInput[-1] != Direction.LEFT):
+                self.queueSnakeInput.append(Direction.LEFT)
+                
+            elif (pyxel.btnp(pyxel.KEY_D)==True and self.queueSnakeInput[-1] != Direction.RIGHT and self.queueSnakeInput[-1] != Direction.LEFT):
+                self.queueSnakeInput.append(Direction.RIGHT)
+            
+    def isColliding(self, other):
+        return self.snake[0].x < other.x + other.w and \
+            self.snake[0].x + self.snake[0].w > other.x and \
+            self.snake[0].y < other.y + other.h and \
+            self.snake[0].y + self.snake[0].h > other.y
+    
+    def checkColisions(self):
+        for s in self.snake:
+            if s == self.snake[0]: continue
+            if self.isColliding(s) == True:
+                pass
+                
+
 App(WIDTH,HEIGHT)
         
