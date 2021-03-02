@@ -1,9 +1,12 @@
 import pyxel
 import random
 import enum
+import time
 
 WIDTH = 192
 HEIGHT = 128
+
+SPEED = 5.9
 
 RESOURCES = "Assets/resources.pyxres"
 class Direction(enum.Enum):
@@ -25,8 +28,14 @@ class Coin():
         pyxel.blt(self.x,self.y,0,16,0,self.w,self.h,0)
         
     def randomPosition(self):
-        self.x = random.randint(0,pyxel.width)
-        self.y = random.randint(0,pyxel.height)
+        self.x = random.randrange(0,pyxel.width,self.w)
+        self.y = random.randrange(0,pyxel.height,self.h)
+        
+    def IsColliding(self, other):
+        return self.x < other.x + other.w and \
+            self.x + self.w > other.x and \
+            self.y < other.y + other.h and \
+            self.y + self.h > other.y
         
 class SnakeSection():
     def __init__(self,x,y,isHead=False):
@@ -75,7 +84,7 @@ class App():
         pyxel.init( width      = WIDHT,
                     height     = HEIGHT,
                     caption    = "Snake",
-                    fps        = 5,
+                    fps        = 60,
                     fullscreen = True, 
                     scale      = 8 )
         
@@ -88,25 +97,36 @@ class App():
         self.snake.append(SnakeSection(8,0))
         self.snake.append(SnakeSection(0,0))
         self.snakeDirection: Direction = Direction.RIGHT
+        self.snakeSpeed = SPEED
+        
+        self.timeLastFrame = time.time()
+        self.timeSinceLastMove = 0
+        self.dt = 0
         
         pyxel.mouse(True)
         pyxel.run(self.update,self.draw)
         
-    def update(self):        
+    def update(self):
+        timeThisFrame = time.time()
+        self.dt = timeThisFrame - self.timeLastFrame
+        self.timeLastFrame = timeThisFrame
+        self.timeSinceLastMove += self.dt
+        if self.timeSinceLastMove >= 1/self.snakeSpeed:
+            self.timeSinceLastMove = 0
+            self.moveSnake()
+                
         if (pyxel.btnp(pyxel.KEY_SPACE)==True):
             self.coin.randomPosition()
             self.addSection()
-        if (pyxel.btn(pyxel.KEY_W)==True):
+        if (pyxel.btn(pyxel.KEY_W)==True and self.snakeDirection != Direction.DOWN):
             self.snakeDirection = Direction.UP
-        if (pyxel.btn(pyxel.KEY_S)==True):
+        if (pyxel.btn(pyxel.KEY_S)==True and self.snakeDirection != Direction.UP):
             self.snakeDirection = Direction.DOWN
-        if (pyxel.btn(pyxel.KEY_A)==True):
+        if (pyxel.btn(pyxel.KEY_A)==True and self.snakeDirection != Direction.RIGHT):
             self.snakeDirection = Direction.LEFT
-        if (pyxel.btn(pyxel.KEY_D)==True):
+        if (pyxel.btn(pyxel.KEY_D)==True and self.snakeDirection != Direction.LEFT):
             self.snakeDirection = Direction.RIGHT
             
-        self.moveSnake()
-        
 
     def draw(self):
         pyxel.cls(1)
@@ -115,6 +135,9 @@ class App():
             s.draw(self.snakeDirection)
             
     def moveSnake(self):
+        
+        checkPosition = False
+        
         previousLocationX = self.snake[0].x
         previousLocationY = self.snake[0].y
         
@@ -128,7 +151,15 @@ class App():
             self.snake[0].y += self.snake[0].h
             
         for s in self.snake:
-            if s == self.snake[0]: continue
+            
+            if s == self.snake[0]: 
+                if self.coin.IsColliding(s):
+                    self.addSection()
+                    self.coin.randomPosition() 
+                    checkPosition = True
+                    self.snakeSpeed += (self.snakeSpeed * 0.1)
+                continue
+            
             currentLocationX = s.x
             currentLocationY = s.y
             
@@ -137,6 +168,9 @@ class App():
             
             previousLocationX = currentLocationX
             previousLocationY = currentLocationY
+            
+            if self.coin.IsColliding(s) and checkPosition:
+                self.coin.randomPosition()
         
     def addSection(self):
         if self.snakeDirection == Direction.RIGHT:
