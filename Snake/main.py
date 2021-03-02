@@ -115,8 +115,9 @@ class App():
         
         pyxel.mouse(True)
         
+        self.playMusic = True
+
         self.startNewGame()
-        
         pyxel.run(self.update,self.draw)
         
     def update(self):
@@ -141,7 +142,7 @@ class App():
             
 
     def draw(self):
-        pyxel.cls(1)
+        pyxel.cls(0)
         self.scene.draw()
         self.coin.draw()
         for s in self.snake:
@@ -189,7 +190,10 @@ class App():
             self.addSection()
             print(pyxel.tilemap(0).get((self.snake[0].x/8), (self.snake[0].y/8)))
             print(pyxel.frame_count)
-
+        
+        if (pyxel.btnp(pyxel.KEY_M)==True):
+            self.playMusic = not(self.playMusic)
+            self.togleMusic()
         
         if len(self.queueSnakeInput) == 0:
             if (pyxel.btnp(pyxel.KEY_W)==True and self.snakeDirection != Direction.UP and self.snakeDirection != Direction.DOWN):
@@ -230,6 +234,7 @@ class App():
             if s == self.snake[0]: continue
             if self.isColliding(s) == True:
                 self.currentGameState = GameState.GAMEOVER
+                self.playSound("explosion")
                 
         #COIN
 
@@ -243,14 +248,17 @@ class App():
                     self.coin.randomPosition() 
                     checkPositionCoin = True
                     self.snakeSpeed += (self.snakeSpeed * 0.01)
+                    self.playSound("coin")
                     
-        if self.coin.IsColliding(s) and checkPositionCoin:
+        if (self.coin.IsColliding(s) and checkPositionCoin) or (pyxel.tilemap(0).get((self.coin.x/8), (self.coin.y/8))==33):
             self.coin.randomPosition()
+            
             
         #WALL
         
         if pyxel.tilemap(0).get((self.snake[0].x/8), (self.snake[0].y/8))==33:
             self.currentGameState = GameState.GAMEOVER
+            self.playSound("explosion")
                 
     def startNewGame(self):
         
@@ -271,7 +279,21 @@ class App():
         self.queueSnakeInput.clear()
         
         self.currentGameState = GameState.RUNNING
-
-
+        
+        if self.playMusic:
+            pyxel.playm(0,loop=True)
+            
+    def togleMusic(self):
+        if self.playMusic:
+            pyxel.playm(0,loop=True)
+        else: 
+            pyxel.stop()
+            
+    def playSound(self,sound):
+        if sound == "coin":
+            pyxel.play(1,0)
+        elif sound == "explosion":
+            pyxel.stop()
+            pyxel.play(2,1)
 App(WIDTH,HEIGHT)
 #2:06:22        
