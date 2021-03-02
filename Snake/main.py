@@ -152,9 +152,7 @@ class App():
         
         if len(self.queueSnakeInput):
             self.snakeDirection = self.queueSnakeInput.popleft()
-        
-        checkPositionCoin = False
-        
+                
         previousLocationX = self.snake[0].x
         previousLocationY = self.snake[0].y
         
@@ -169,13 +167,7 @@ class App():
             
         for s in self.snake:
             
-            if s == self.snake[0]: 
-                if self.coin.IsColliding(s):
-                    self.addSection()
-                    self.coin.randomPosition() 
-                    checkPositionCoin = True
-                    self.snakeSpeed += (self.snakeSpeed * 0.01)
-                continue
+            if s == self.snake[0]: continue
             
             currentLocationX = s.x
             currentLocationY = s.y
@@ -186,8 +178,6 @@ class App():
             previousLocationX = currentLocationX
             previousLocationY = currentLocationY
             
-            if self.coin.IsColliding(s) and checkPositionCoin:
-                self.coin.randomPosition()
         
     def addSection(self):
         self.snake.append(SnakeSection(self.snake[-1].x, self.snake[-1].y))
@@ -197,6 +187,9 @@ class App():
         if (pyxel.btnp(pyxel.KEY_SPACE)==True):
             self.coin.randomPosition()
             self.addSection()
+            print(pyxel.tilemap(0).get((self.snake[0].x/8), (self.snake[0].y/8)))
+            print(pyxel.frame_count)
+
         
         if len(self.queueSnakeInput) == 0:
             if (pyxel.btnp(pyxel.KEY_W)==True and self.snakeDirection != Direction.UP and self.snakeDirection != Direction.DOWN):
@@ -232,10 +225,32 @@ class App():
             self.snake[0].y + self.snake[0].h > other.y
     
     def checkColisions(self):
+        #TAIL
         for s in self.snake:
             if s == self.snake[0]: continue
             if self.isColliding(s) == True:
                 self.currentGameState = GameState.GAMEOVER
+                
+        #COIN
+
+        checkPositionCoin = False
+
+        for s in self.snake:
+            
+            if s == self.snake[0]: 
+                if self.coin.IsColliding(s):
+                    self.addSection()
+                    self.coin.randomPosition() 
+                    checkPositionCoin = True
+                    self.snakeSpeed += (self.snakeSpeed * 0.01)
+                    
+        if self.coin.IsColliding(s) and checkPositionCoin:
+            self.coin.randomPosition()
+            
+        #WALL
+        
+        if pyxel.tilemap(0).get((self.snake[0].x/8), (self.snake[0].y/8))==33:
+            self.currentGameState = GameState.GAMEOVER
                 
     def startNewGame(self):
         
@@ -259,4 +274,4 @@ class App():
 
 
 App(WIDTH,HEIGHT)
-#1:33:25        
+#2:06:22        
