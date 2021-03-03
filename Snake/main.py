@@ -295,5 +295,5 @@ class App():
         elif sound == "explosion":
             pyxel.stop()
             pyxel.play(2,1)
+            
 App(WIDTH,HEIGHT)
-#2:06:22        
