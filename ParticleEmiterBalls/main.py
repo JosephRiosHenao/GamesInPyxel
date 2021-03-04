@@ -11,53 +11,32 @@ class Ball():
     def __init__(self,x,y,r,col,a,vi):
         
         self.x = x # X ubicacion
-        self.xi = x
         self.y = y # Y ubicacion
-        self.yi = y
         
         self.a = a # Angulo
         self.vi = vi # Velocidad Inicial = hipotenusa
         
-        self.ac = -9.8
-        
-        self.t = 0
-        self.starting_point = time.time() # Tiempo
+        self.t = 0 # Tiempo
         
         self.r = r # Radio
         self.col = col # Color
         
-        # print(self.a)
-        # print(self.vi)
+        print(self.a)
+        print(self.vi)
         
-        self.viY = round((math.sin(math.radians(self.a)))*self.vi,2)*0.05 # Velocidad Inicial Y
-        self.vX = round((math.cos(math.radians(self.a)))*self.vi,2) # Velocidad vector X constante
-        self.ts = round(self.viY/G,2) * 100 # Tiempo de subida al punto mas alto
+        self.viY = round((math.sin(math.radians(self.a)))*self.vi,2) # Velocidad Inicial Y
+        self.vX = round((math.cos(math.radians(self.a)))*self.vi,2)*0.01 # Velocidad vector X constante
+        self.ts = round(self.viY/G,2) # Tiempo de subida al punto mas alto
         
-        print(self.ts)
         # print(self.a)
         # print(self.vi)
         # print(self.viY)
-        # print(self.vX) 
-        # print(self.ts)
+        print(self.vX) 
     
     def update(self):
-                
-        self.elapsed_time = round(time.time () - self.starting_point,2)
-        self.t = self.elapsed_time
-        
-        #if self.y < 120: self.y += G*PYXELWIDHT #Simulando gravedad
+        if self.y < 120: self.y += G*PYXELWIDHT #Simulando gravedad
         self.vY = self.viY + self.a*self.t # Calculando velocidad
-        self.x = self.xi + self.vX * self.t # multiplica la constante por el timepo para saber la poscicion
-        
-        if self.t <= self.ts:
-            self.y = self.yi + self.viY*self.t + 0.5 * self.vY * math.pow(self.t,2)
-        else:
-            self.y = (self.yi + self.viY*self.t + 0.5 * self.vY * math.pow(self.t,2)) - pyxel.height
-
-        # if self.t <= self.ts:
-        #     self.y -= self.vY
-        # else:
-        #     self.y += self.vY
+        self.x += self.vX
         
     def draw(self):
         pyxel.circ(self.x,self.y,self.r,self.col) # Dibujando
@@ -125,7 +104,7 @@ class App():
         
     def generateBall(self):
         color = random.randint(1, 15) # Colores random
-        self.listBalls.append(Ball(20,120,2,color,self.Triangulo.A,self.Triangulo.h)) # Agregar objecto a la lista
+        self.listBalls.append(Ball(10,10,2,color,self.Triangulo.A,self.Triangulo.h)) # Agregar objecto a la lista
     
     def clearListBall(self):
         self.listBalls.clear() # Limpiar lista de objetos
