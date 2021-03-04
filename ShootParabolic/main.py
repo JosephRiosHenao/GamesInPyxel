@@ -15,15 +15,25 @@ class Pixel():
     def draw(self):
         pyxel.pset(self.x,self.y,self.col)
 class Ball():
+    def __init__(self,a,xFinal,t):
+        self.a = a
+        self.xFinal = xFinal
+        self.x = self.xi + self.vX * math.cos(math.radians(self.a)) * self.t
+        self.y = self.yi + self.vi * math.sin(math.radians(self.a)) + 1/2 * (-9.8) * math.pow(self.t,2)
+        self.t = t
+        
+        self.v0 = 0
+        self.xFinal = self.v0*math.cos(math.radians(a))*self.t
+        
     def __init__(self,x,y,r,col,a,vi):
         
         self.x = x # X ubicacion
-        self.xi = x
+        self.xi = x # X ubicancion para determinar posicion incial
         self.y = y # Y ubicacion
-        self.yi = y
+        self.yi = y # Y ubicacion para determinar altura inicial
         
         self.a = a # Angulo
-        self.vi = vi # Velocidad Inicial = hipotenusa
+        self.vi = vi # Velocidad Inicial = hipotenusa - Fuerza lanzamiento
                 
         self.t = 0
         self.starting_point = time.time() # Tiempo
@@ -32,36 +42,38 @@ class Ball():
         self.col = col # Color
         
         self.dif = + pyxel.height - self.yi
-        # self.a = a # Angulo
-        # self.vi = vi # Velocidad Inicial = hipotenusa
         
         self.listPixel = []
-        # self.ac = -9.8
         
-        # self.t = 0
         self.starting_point = time.time() # Tiempo
-        
-        # self.r = r # Radio
-        # self.col = col # Color
 
-        
         self.viY = round((math.sin(math.radians(self.a)))*self.vi,2) # Velocidad Inicial Y
         self.vX = round((math.cos(math.radians(self.a)))*self.vi,2) # Velocidad vector X constante
-        self.ts = round(self.viY/G,2) * 100 # Tiempo de subida al punto mas alto
+        self.ts = round(self.viY/G,2) * -1 # Tiempo de subida al punto mas alto, multiplico por -1 por el signo
+        self.yMax = round(math.pow(self.viY,2) / (2 * (G)),2) * -1 # Altura maxima alcanzada
+        self.tTotal = round(2*self.ts,2) # Tiempo total de vuelo el doble de subida
+        self.xTotal = round(self.vX*self.tTotal,2) # Despazamiento en X total
+        
+        print("Componente rectangular Y inicial:",self.viY,"m")
+        print("Componente rectangular X constante:",self.vX,"m")
+        print("Altura maxima:",self.yMax,"m")
+        print("Tiempo para altura maxima:",self.ts,"s")
+        print("Tiempo total de vuelo:",self.tTotal,"s")
+        print("Dezplazamiento total:",self.xTotal,"m")
 
-    
+        
+        
     def update(self):
-                
-        self.elapsed_time = round(time.time () - self.starting_point,2)
-        self.t = self.elapsed_time
         
-        #if self.y < 120: self.y += G*PYXELWIDHT #Simulando gravedad
-        # self.vY = self.viY + self.a*self.t # Calculando velocidad
-        self.x = self.xi + self.vX * self.t # multiplica la constante por el timepo para saber la poscicion
-        
-        self.y = (self.viY*self.t+1/2*G*math.pow(self.t,2))  * -1 + (pyxel.height - self.dif)
-        
-        self.listPixel.append(Pixel(self.x,self.y,self.col))
+        if self.t < self.tTotal:
+            self.elapsed_time = round(time.time () - self.starting_point,2)
+            self.t = self.elapsed_time
+            
+            self.x = self.xi + self.vX * self.t # multiplica la constante por el timepo para saber la poscicion
+            
+            self.y = (self.viY*self.t+1/2*G*math.pow(self.t,2))  * -1 + (pyxel.height - self.dif)
+            
+            self.listPixel.append(Pixel(self.x,self.y,self.col))
 
 
     def draw(self):
@@ -129,8 +141,8 @@ class App():
         for ball in self.listBalls: # Array de objetos
             ball.draw() # Dibujar Objeto
         self.Triangulo.draw()
-        pyxel.text(5,5,"Angulo: "+str(self.Triangulo.A),15)
-        pyxel.text(5,10,"Fuerza: "+str(self.Triangulo.h),15)
+        pyxel.text(5,5,"Angulo: "+str(self.Triangulo.A)+"°",15)
+        pyxel.text(5,10,"Fuerza: "+str(self.Triangulo.h)+"m/s",15)
 
     
     def checkInput(self): 
