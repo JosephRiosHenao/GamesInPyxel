@@ -1,27 +1,12 @@
 import pyxel
 import random
 import math
+import time
 
 
 G = 9.8
-PYXELWIDHT = 0.1
+PYXELWIDHT = 0.1 
 
-print()
-#a = input("digite angulo")
-#A = 0 #X
-#B = 0 #y
-
-#H = 0 #HIPOTENUSA
-
-# 20a, 0.9t, 2.87m --> 3.8ms2
-
-# x distancia recorrida de lanzamiento
-# t tiempo
-# a angulo
-# cosa 
-
-# cosa = A/H
-# sina = B/H
 class Ball():
     def __init__(self,x,y,r,col,a,vi):
         
@@ -36,14 +21,21 @@ class Ball():
         self.r = r # Radio
         self.col = col # Color
         
-        self.v1y = (math.sin(math.radians(self.a)))*self.vi # Velocidad Inicial Y
-
+        self.viY = round((math.sin(math.radians(self.a)))*self.vi,2) # Velocidad Inicial Y
+        self.vX = round((math.cos(math.radians(self.a)))*self.vi,2) # Velocidad vector X constante
+        self.ts = round(self.viY/G,2) # Tiempo de subida al punto mas alto
+        
+        # print(self.a)
+        # print(self.vi)
+        # print(self.viY)
+        # print(self.vX) 
     
     def update(self):
         if self.y < 120: self.y += G*PYXELWIDHT #Simulando gravedad
+        self.vY = self.viY + self.a*self.t # Calculando velocidad
         
     def draw(self):
-        pyxel.circ(self.x,self.y,self.r,self.col) # Digujando
+        pyxel.circ(self.x,self.y,self.r,self.col) # Dibujando
         
 class Pitagoras():
     def __init__(self,Ax,Ay):
@@ -62,14 +54,14 @@ class Pitagoras():
         
         
     def update(self):
-        self.Bx = pyxel.mouse_x
-        self.By = pyxel.mouse_y
-        self.MouseXVelocity = pyxel.mouse_x*2
+        self.Bx = pyxel.mouse_x # Capturando Posicion MouseX
+        self.By = pyxel.mouse_y # Capturando Posicion MouseY
+        self.MouseXVelocity = pyxel.mouse_x*0.2 # Mejorando presicion de velocidad actual: 38.2
         
         self.ca = self.Bx - self.Ax # Hallar tamaño de cateto adyaciente (Mouse - Triangulo)
         self.co = self.Ay - self.By # Hallar tamaño de cateto opuesto (Triangulo - mouse)
-        self.h = math.sqrt(math.pow(self.ca, 2) + math.pow(self.co, 2)); # Hallar hipotenusa
-        self.A = math.degrees(math.atan((self.co/self.ca))) # Angulo
+        self.h = round(math.sqrt(math.pow(self.ca, 2) + math.pow(self.co, 2)),2) # Hallar hipotenusa
+        self.A = round(math.degrees(math.atan((self.co/self.ca))),2) # Angulo
         
     def draw(self):
         pyxel.line(self.Ax,self.Ay,self.Bx,self.By,15) # Hipotenusa
@@ -83,6 +75,7 @@ class App():
                     caption    = "MoveParabolist",
                     fps        = 60,
                     fullscreen = False )
+        
         self.listBalls = []
         self.Triangulo = Pitagoras(10,120) 
         pyxel.run(self.update,self.draw)
@@ -107,7 +100,7 @@ class App():
         
     def generateBall(self):
         color = random.randint(1, 15) # Colores random
-        self.listBalls.append(Ball(10,10,2,color,self.Triangulo.A,self.Triangulo.MouseXVelocity)) # Agregar objecto a la lista
+        self.listBalls.append(Ball(10,10,2,color,self.Triangulo.A,self.Triangulo.h)) # Agregar objecto a la lista
     
     def clearListBall(self):
         self.listBalls.clear() # Limpiar lista de objetos
