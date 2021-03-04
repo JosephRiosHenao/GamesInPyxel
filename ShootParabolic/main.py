@@ -4,7 +4,7 @@ import math
 import time
 
 
-G = -9.8
+G = -9.81
 PYXELWIDHT = 0.1 
 
 class Pixel():
@@ -14,16 +14,70 @@ class Pixel():
         self.col = col
     def draw(self):
         pyxel.pset(self.x,self.y,self.col)
-class Ball():
-    def __init__(self,a,xFinal,t):
-        self.a = a
-        self.xFinal = xFinal
-        self.x = self.xi + self.vX * math.cos(math.radians(self.a)) * self.t
-        self.y = self.yi + self.vi * math.sin(math.radians(self.a)) + 1/2 * (-9.8) * math.pow(self.t,2)
-        self.t = t
         
-        self.v0 = 0
-        self.xFinal = self.v0*math.cos(math.radians(a))*self.t
+class BallMathV():
+        
+    def __init__(self,x,y,r,col,a,xMax):
+        
+        self.x = x # X ubicacion
+        self.xi = x # X ubicancion para determinar posicion incial
+        self.y = y # Y ubicacion
+        self.yi = y # Y ubicacion para determinar altura inicial
+        
+        self.a = a # Angulo
+        
+        self.xMax = xMax 
+                
+        self.t = 0
+        self.starting_point = time.time() # Tiempo
+        
+        self.r = r # Radio
+        self.col = col # Color
+        
+        self.dif = + pyxel.height - self.yi
+        
+        self.listPixel = []
+        
+        self.starting_point = time.time() # Tiempo
+        
+        print((G*-1)*self.xMax)
+        print(math.sin(math.radians(2*self.a)))
+        
+        self.vi = round(math.sqrt(((G*-1)*self.xMax)/math.sin(math.radians(2*self.a))),2)  # Velocidad Inicial = hipotenusa - Fuerza lanzamiento
+        self.viY = round((math.sin(math.radians(self.a)))*self.vi,2) # Velocidad Inicial Y
+        self.vX = round((math.cos(math.radians(self.a)))*self.vi,2) # Velocidad vector X constante
+        self.ts = round(self.viY/G,2) * -1 # Tiempo de subida al punto mas alto, multiplico por -1 por el signo
+        self.yMax = round(math.pow(self.viY,2) / (2 * (G)),2) * -1 # Altura maxima alcanzada
+        self.tTotal = round(2*self.ts,2) # Tiempo total de vuelo el doble de subida
+        self.xTotal = round(self.vX*self.tTotal,2) # Despazamiento en X total
+        
+        print("Componente rectangular Y inicial:",self.viY,"m")
+        print("Componente rectangular X constante:",self.vX,"m")
+        print("Altura maxima:",self.yMax,"m")
+        print("Tiempo para altura maxima:",self.ts,"s")
+        print("Tiempo total de vuelo:",self.tTotal,"s")
+        print("Dezplazamiento total:",self.xTotal,"m")
+        
+        
+    def update(self):
+        
+        if self.t < self.tTotal:
+            self.elapsed_time = round(time.time () - self.starting_point,2)
+            self.t = self.elapsed_time
+            
+            self.x = self.xi + self.vX * self.t # multiplica la constante por el timepo para saber la poscicion
+            
+            self.y = (self.viY*self.t+1/2*G*math.pow(self.t,2))  * -1 + (pyxel.height - self.dif)
+            
+            self.listPixel.append(Pixel(self.x,self.y,self.col))
+
+
+    def draw(self):
+        pyxel.circ(self.x,self.y,self.r,self.col) # Dibujando
+        for pixel in self.listPixel:
+            pixel.draw()
+        
+class Ball():
         
     def __init__(self,x,y,r,col,a,vi):
         
@@ -152,7 +206,8 @@ class App():
     def generateBall(self):
         color = random.randint(1, 14) # Colores random
         self.listBalls.append(Ball(10,120,2,color,self.Triangulo.A,self.Triangulo.h)) # Agregar objecto a la lista
-    
+        # self.listBalls.append(BallMathV(10,120,2,color,28,21.63)) # Agregar objecto a la lista
+
     def clearListBall(self):
         self.listBalls.clear() # Limpiar lista de objetos
         
