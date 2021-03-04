@@ -4,7 +4,7 @@ import math
 import time
 
 
-G = 9.8
+G = -9.8
 PYXELWIDHT = 0.1 
 
 class Ball():
@@ -17,9 +17,7 @@ class Ball():
         
         self.a = a # Angulo
         self.vi = vi # Velocidad Inicial = hipotenusa
-        
-        self.ac = -9.8
-        
+                
         self.t = 0
         self.starting_point = time.time() # Tiempo
         
@@ -29,7 +27,6 @@ class Ball():
         self.dif = + pyxel.height - self.yi
 
         self.starting_point = time.time() # Tiempo
-        
         self.viY = round((math.sin(math.radians(self.a)))*self.vi,2) # Velocidad Inicial Y
         self.vX = round((math.cos(math.radians(self.a)))*self.vi,2) # Velocidad vector X constante
         self.ts = round(self.viY/G,2) * 100 # Tiempo de subida al punto mas alto
@@ -39,7 +36,7 @@ class Ball():
                 
         self.elapsed_time = round(time.time () - self.starting_point,2)
         self.t = self.elapsed_time
-        
+
         self.x = self.xi + self.vX * self.t # multiplica la constante por el timepo para saber la poscicion
         
         self.y = (self.viY*self.t+1/2*G*math.pow(self.t,2))  * -1 + (pyxel.height - self.dif)
@@ -66,7 +63,6 @@ class Pitagoras():
     def update(self):
         self.Bx = pyxel.mouse_x # Capturando Posicion MouseX
         self.By = pyxel.mouse_y # Capturando Posicion MouseY
-        #self.MouseXVelocity = -pyxel.mouse_x*0.2 # Mejorando presicion de velocidad actual: 38.2
         
         self.ca = self.Bx - self.Ax # Hallar tamaño de cateto adyaciente (Mouse - Triangulo)
         self.co = self.Ay - self.By # Hallar tamaño de cateto opuesto (Triangulo - mouse)

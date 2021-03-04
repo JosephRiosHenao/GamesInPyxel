@@ -11,15 +11,13 @@ class Ball():
     def __init__(self,x,y,r,col,a,vi):
         
         self.x = x # X ubicacion
-        self.xi = x
+        
         self.y = y # Y ubicacion
         self.yi = y
         
         self.a = a # Angulo
         self.vi = vi # Velocidad Inicial = hipotenusa
-        
-        self.ac = -9.8
-        
+                
         self.t = 0
         self.starting_point = time.time() # Tiempo
         
@@ -27,49 +25,18 @@ class Ball():
         self.col = col # Color
         
         self.dif = + pyxel.height - self.yi
-        print(self.dif)
-        # self.a = a # Angulo
-        # self.vi = vi # Velocidad Inicial = hipotenusa
-        
-        # self.ac = -9.8
-        
-        # self.t = 0
+
         self.starting_point = time.time() # Tiempo
         
-        # self.r = r # Radio
-        # self.col = col # Color
-        
-        # print(self.a)
-        # print(self.vi)
-        
         self.viY = round((math.sin(math.radians(self.a)))*self.vi,2) # Velocidad Inicial Y
-        self.vX = round((math.cos(math.radians(self.a)))*self.vi,2) # Velocidad vector X constante
-        self.ts = round(self.viY/G,2) * 100 # Tiempo de subida al punto mas alto
-        
-        print(self.ts)
-        # print(self.a)
-        # print(self.vi)
-        # print(self.viY)
-        # print(self.vX) 
-        # print(self.ts)
-    
+
     def update(self):
                 
         self.elapsed_time = round(time.time () - self.starting_point,2)
         self.t = self.elapsed_time
-        
-        #if self.y < 120: self.y += G*PYXELWIDHT #Simulando gravedad
-        # self.vY = self.viY + self.a*self.t # Calculando velocidad
-        self.x = self.xi + self.vX * self.t # multiplica la constante por el timepo para saber la poscicion
-        
+
         self.y = (self.viY*self.t+1/2*G*math.pow(self.t,2))  * -1 + (pyxel.height - self.dif)
 
-
-        # if self.t <= self.ts:
-        #     self.y -= self.vY
-        # else:
-        #     self.y += self.vY
-        
     def draw(self):
         pyxel.circ(self.x,self.y,self.r,self.col) # Dibujando
         

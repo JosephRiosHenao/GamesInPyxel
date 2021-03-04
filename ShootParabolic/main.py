@@ -4,9 +4,16 @@ import math
 import time
 
 
-G = 9.8
+G = -9.8
 PYXELWIDHT = 0.1 
 
+class Pixel():
+    def __init__(self,x,y,col):
+        self.x = x
+        self.y = y
+        self.col = col
+    def draw(self):
+        pyxel.pset(self.x,self.y,self.col)
 class Ball():
     def __init__(self,x,y,r,col,a,vi):
         
@@ -17,9 +24,7 @@ class Ball():
         
         self.a = a # Angulo
         self.vi = vi # Velocidad Inicial = hipotenusa
-        
-        self.ac = -9.8
-        
+                
         self.t = 0
         self.starting_point = time.time() # Tiempo
         
@@ -27,10 +32,10 @@ class Ball():
         self.col = col # Color
         
         self.dif = + pyxel.height - self.yi
-        print(self.dif)
         # self.a = a # Angulo
         # self.vi = vi # Velocidad Inicial = hipotenusa
         
+        self.listPixel = []
         # self.ac = -9.8
         
         # self.t = 0
@@ -38,20 +43,12 @@ class Ball():
         
         # self.r = r # Radio
         # self.col = col # Color
-        
-        # print(self.a)
-        # print(self.vi)
+
         
         self.viY = round((math.sin(math.radians(self.a)))*self.vi,2) # Velocidad Inicial Y
         self.vX = round((math.cos(math.radians(self.a)))*self.vi,2) # Velocidad vector X constante
         self.ts = round(self.viY/G,2) * 100 # Tiempo de subida al punto mas alto
-        
-        print(self.ts)
-        # print(self.a)
-        # print(self.vi)
-        # print(self.viY)
-        # print(self.vX) 
-        # print(self.ts)
+
     
     def update(self):
                 
@@ -63,15 +60,14 @@ class Ball():
         self.x = self.xi + self.vX * self.t # multiplica la constante por el timepo para saber la poscicion
         
         self.y = (self.viY*self.t+1/2*G*math.pow(self.t,2))  * -1 + (pyxel.height - self.dif)
-
-
-        # if self.t <= self.ts:
-        #     self.y -= self.vY
-        # else:
-        #     self.y += self.vY
         
+        self.listPixel.append(Pixel(self.x,self.y,self.col))
+
+
     def draw(self):
         pyxel.circ(self.x,self.y,self.r,self.col) # Dibujando
+        for pixel in self.listPixel:
+            pixel.draw()
         
 class Pitagoras():
     def __init__(self,Ax,Ay):
@@ -97,7 +93,11 @@ class Pitagoras():
         self.ca = self.Bx - self.Ax # Hallar tamaño de cateto adyaciente (Mouse - Triangulo)
         self.co = self.Ay - self.By # Hallar tamaño de cateto opuesto (Triangulo - mouse)
         self.h = round(math.sqrt(math.pow(self.ca, 2) + math.pow(self.co, 2)),2) # Hallar hipotenusa
-        self.A = round(math.degrees(math.atan((self.co/self.ca))),2) # Angulo
+        try:
+            self.A = round(math.degrees(math.atan((self.co/self.ca))),2) # Angulo
+        except ZeroDivisionError as e:
+            print("angulo: 0",e)
+            
         
     def draw(self):
         pyxel.line(self.Ax,self.Ay,self.Bx,self.By,15) # Hipotenusa
@@ -129,13 +129,16 @@ class App():
         for ball in self.listBalls: # Array de objetos
             ball.draw() # Dibujar Objeto
         self.Triangulo.draw()
+        pyxel.text(5,5,"Angulo: "+str(self.Triangulo.A),15)
+        pyxel.text(5,10,"Fuerza: "+str(self.Triangulo.h),15)
+
     
     def checkInput(self): 
         if (pyxel.btnp(pyxel.KEY_SPACE)): self.generateBall() # Space -> generar bola
         if (pyxel.btnp(pyxel.KEY_R)): self.clearListBall() # R -> Resetear todo
         
     def generateBall(self):
-        color = random.randint(1, 15) # Colores random
+        color = random.randint(1, 14) # Colores random
         self.listBalls.append(Ball(10,120,2,color,self.Triangulo.A,self.Triangulo.h)) # Agregar objecto a la lista
     
     def clearListBall(self):
