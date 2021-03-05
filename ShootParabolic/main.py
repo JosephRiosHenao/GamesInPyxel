@@ -1,10 +1,18 @@
+
+# IMPORTANDO LIBRERIAS
+
+# -Pyxel: libreria grafica para videojuegos de 8bits
+# -Random: Generara colores aleatorios
+# -Math: Toda la matematic ala facilita
+# -Time: Calcula el timepo
+
 import pyxel
 import random
 import math
 import time
 
 
-G = -9.81
+G = 9.81
 PYXELWIDHT = 0.1 
 
 class Pixel():
@@ -41,22 +49,26 @@ class BallMathV():
         self.starting_point = time.time() # Tiempo
         
         
-        self.vi = round(math.sqrt(((G*-1)*self.xMax)/math.sin(math.radians(2*self.a))),2)  # Velocidad Inicial = hipotenusa - Fuerza lanzamiento
+        self.vi = round(math.sqrt(((G)*self.xMax)/math.sin(math.radians(2*self.a))),2)  # Velocidad Inicial = hipotenusa - Fuerza lanzamiento
         self.viY = round((math.sin(math.radians(self.a)))*self.vi,2) # Velocidad Inicial Y
         self.vX = round((math.cos(math.radians(self.a)))*self.vi,2) # Velocidad vector X constante
-        self.ts = round(self.viY/G,2) * -1 # Tiempo de subida al punto mas alto, multiplico por -1 por el signo
-        self.yMax = round(math.pow(self.viY,2) / (2 * (G)),2) * -1 # Altura maxima alcanzada
+        self.ts = round(self.viY/G,2) # Tiempo de subida al punto mas alto, multiplico por -1 por el signo
+        self.yMax = round(math.pow(self.viY,2) / (2 * (G)),2)# Altura maxima alcanzada
         self.tTotal = round(2*self.ts,2) # Tiempo total de vuelo el doble de subida
         self.xTotal = round(self.vX*self.tTotal,2) # Despazamiento en X total
+        self.vFy = round((-G)*self.tTotal + 9.19,2)
+        self.vF = round(self.vX + self.vFy)
         
         print("---------------------DATOS--------------------")
-        print("Velocidad inicial:",self.vi,"m")
-        print("Componente rectangular Y inicial:",self.viY,"m")
-        print("Componente rectangular X constante:",self.vX,"m")
+        print("Velocidad inicial:",self.vi,"m/s")
+        print("Componente rectangular Y inicial:",self.viY,"m/s")
+        print("Componente rectangular X constante:",self.vX,"m/s")
         print("Altura maxima:",self.yMax,"m")
         print("Tiempo para altura maxima:",self.ts,"s")
         print("Tiempo total de vuelo:",self.tTotal,"s")
         print("Dezplazamiento total:",self.xTotal,"m")
+        print("Velocidad final:",self.vF,"m/s")
+        print("Componente rectangular Y final:",self.vFy,"m/s")
         print("----------------------------------------------")
 
         
@@ -69,7 +81,7 @@ class BallMathV():
             
             self.x = self.xi + self.vX * self.t # multiplica la constante por el timepo para saber la poscicion
             
-            self.y = (self.viY*self.t+1/2*G*math.pow(self.t,2))  * -1 + (pyxel.height - self.dif)
+            self.y = (self.viY*self.t+(-1/2*G)*math.pow(self.t,2))  * -1 + (pyxel.height - self.dif)
             
             self.listPixel.append(Pixel(self.x,self.y,self.col))
 
@@ -105,19 +117,23 @@ class Ball():
 
         self.viY = round((math.sin(math.radians(self.a)))*self.vi,2) # Velocidad Inicial Y
         self.vX = round((math.cos(math.radians(self.a)))*self.vi,2) # Velocidad vector X constante
-        self.ts = round(self.viY/G,2) * -1 # Tiempo de subida al punto mas alto, multiplico por -1 por el signo
-        self.yMax = round(math.pow(self.viY,2) / (2 * (G)),2) * -1 # Altura maxima alcanzada
+        self.ts = round(self.viY/G,2)  # Tiempo de subida al punto mas alto, multiplico por -1 por el signo
+        self.yMax = round(math.pow(self.viY,2) / (2 * (G)),2)  # Altura maxima alcanzada
         self.tTotal = round(2*self.ts,2) # Tiempo total de vuelo el doble de subida
         self.xTotal = round(self.vX*self.tTotal,2) # Despazamiento en X total
-        #self.vFinal = 
+        self.vFy = round((-G)*self.tTotal + 9.19,2)
+        self.vF = round(self.vX + self.vFy,2)
+        
         print("---------------------DATOS--------------------")
-        print("Velocidad inicial:",self.vi,"m")
-        print("Componente rectangular Y inicial:",self.viY,"m")
-        print("Componente rectangular X constante:",self.vX,"m")
+        print("Velocidad inicial:",self.vi,"m/s")
+        print("Componente rectangular Y inicial:",self.viY,"m/s")
+        print("Componente rectangular X constante:",self.vX,"m/s")
         print("Altura maxima:",self.yMax,"m")
         print("Tiempo para altura maxima:",self.ts,"s")
         print("Tiempo total de vuelo:",self.tTotal,"s")
         print("Dezplazamiento total:",self.xTotal,"m")
+        print("Velocidad final:",self.vF,"m/s")
+        print("Componente rectangular Y final:",self.vFy,"m/s")
         print("----------------------------------------------")
 
         
@@ -130,7 +146,7 @@ class Ball():
             
             self.x = self.xi + self.vX * self.t # multiplica la constante por el timepo para saber la poscicion
             
-            self.y = (self.viY*self.t+1/2*G*math.pow(self.t,2))  * -1 + (pyxel.height - self.dif)
+            self.y = (self.viY*self.t+(-1/2)*G*math.pow(self.t,2))  * -1 + (pyxel.height - self.dif)
             
             self.listPixel.append(Pixel(self.x,self.y,self.col))
 
@@ -167,7 +183,7 @@ class Pitagoras():
         try:
             self.A = round(math.degrees(math.atan((self.co/self.ca))),2) # Angulo
         except ZeroDivisionError as e:
-            print("angulo: 0",e)
+            self.A = 90.00
             
         
     def draw(self):
@@ -210,7 +226,7 @@ class App():
         
     def generateBall(self):
         color = random.randint(1, 14) # Colores random
-        #self.listBalls.append(Ball(10,120,2,color,self.Triangulo.A,self.Triangulo.h)) # Agregar objecto a la lista
+        # self.listBalls.append(Ball(10,120,2,color,self.Triangulo.A,self.Triangulo.h)) # Agregar objecto a la lista
         self.listBalls.append(BallMathV(10,120,2,color,48,1.9)) # Agregar objecto a la lista
 
     def clearListBall(self):
