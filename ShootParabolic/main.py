@@ -40,8 +40,6 @@ class BallMathV():
         
         self.starting_point = time.time() # Tiempo
         
-        print((G*-1)*self.xMax)
-        print(math.sin(math.radians(2*self.a)))
         
         self.vi = round(math.sqrt(((G*-1)*self.xMax)/math.sin(math.radians(2*self.a))),2)  # Velocidad Inicial = hipotenusa - Fuerza lanzamiento
         self.viY = round((math.sin(math.radians(self.a)))*self.vi,2) # Velocidad Inicial Y
@@ -51,12 +49,16 @@ class BallMathV():
         self.tTotal = round(2*self.ts,2) # Tiempo total de vuelo el doble de subida
         self.xTotal = round(self.vX*self.tTotal,2) # Despazamiento en X total
         
+        print("---------------------DATOS--------------------")
+        print("Velocidad inicial:",self.vi,"m")
         print("Componente rectangular Y inicial:",self.viY,"m")
         print("Componente rectangular X constante:",self.vX,"m")
         print("Altura maxima:",self.yMax,"m")
         print("Tiempo para altura maxima:",self.ts,"s")
         print("Tiempo total de vuelo:",self.tTotal,"s")
         print("Dezplazamiento total:",self.xTotal,"m")
+        print("----------------------------------------------")
+
         
         
     def update(self):
@@ -74,7 +76,7 @@ class BallMathV():
 
     def draw(self):
         pyxel.circ(self.x,self.y,self.r,self.col) # Dibujando
-        for pixel in self.listPixel:
+        for pixel in self.listPixel:    
             pixel.draw()
         
 class Ball():
@@ -107,13 +109,16 @@ class Ball():
         self.yMax = round(math.pow(self.viY,2) / (2 * (G)),2) * -1 # Altura maxima alcanzada
         self.tTotal = round(2*self.ts,2) # Tiempo total de vuelo el doble de subida
         self.xTotal = round(self.vX*self.tTotal,2) # Despazamiento en X total
-        
+        #self.vFinal = 
+        print("---------------------DATOS--------------------")
+        print("Velocidad inicial:",self.vi,"m")
         print("Componente rectangular Y inicial:",self.viY,"m")
         print("Componente rectangular X constante:",self.vX,"m")
         print("Altura maxima:",self.yMax,"m")
         print("Tiempo para altura maxima:",self.ts,"s")
         print("Tiempo total de vuelo:",self.tTotal,"s")
         print("Dezplazamiento total:",self.xTotal,"m")
+        print("----------------------------------------------")
 
         
         
@@ -205,8 +210,8 @@ class App():
         
     def generateBall(self):
         color = random.randint(1, 14) # Colores random
-        self.listBalls.append(Ball(10,120,2,color,self.Triangulo.A,self.Triangulo.h)) # Agregar objecto a la lista
-        # self.listBalls.append(BallMathV(10,120,2,color,28,21.63)) # Agregar objecto a la lista
+        #self.listBalls.append(Ball(10,120,2,color,self.Triangulo.A,self.Triangulo.h)) # Agregar objecto a la lista
+        self.listBalls.append(BallMathV(10,120,2,color,48,1.9)) # Agregar objecto a la lista
 
     def clearListBall(self):
         self.listBalls.clear() # Limpiar lista de objetos
