@@ -10,6 +10,8 @@ import pyxel
 import random
 import math
 import time
+import tabulate
+import os
 
 
 G = 9.81
@@ -59,17 +61,18 @@ class BallMathV():
         self.vFy = round((-G)*self.tTotal + 9.19,2)
         self.vF = round(self.vX + self.vFy)
         
-        print("---------------------DATOS--------------------")
-        print("Velocidad inicial:",self.vi,"m/s")
-        print("Componente rectangular Y inicial:",self.viY,"m/s")
-        print("Componente rectangular X constante:",self.vX,"m/s")
-        print("Altura maxima:",self.yMax,"m")
-        print("Tiempo para altura maxima:",self.ts,"s")
-        print("Tiempo total de vuelo:",self.tTotal,"s")
-        print("Dezplazamiento total:",self.xTotal,"m")
-        print("Velocidad final:",self.vF,"m/s")
-        print("Componente rectangular Y final:",self.vFy,"m/s")
-        print("----------------------------------------------")
+        # print("---------------------DATOS--------------------")
+        # print("Velocidad inicial:",self.vi,"m/s")
+        # print("Componente rectangular Y inicial:",self.viY,"m/s")
+        # print("Componente rectangular X constante:",self.vX,"m/s")
+        # print("Altura maxima:",self.yMax,"m")
+        # print("Tiempo para altura maxima:",self.ts,"s")
+        # print("Tiempo total de vuelo:",self.tTotal,"s")
+        # print("Dezplazamiento total:",self.xTotal,"m")
+        # print("Velocidad final:",self.vF,"m/s")
+        # print("Componente rectangular Y final:",self.vFy,"m/s")
+        # print("----------------------------------------------")
+        
 
         
         
@@ -124,17 +127,17 @@ class Ball():
         self.vFy = round((-G)*self.tTotal + 9.19,2)
         self.vF = round(self.vX + self.vFy,2)
         
-        print("---------------------DATOS--------------------")
-        print("Velocidad inicial:",self.vi,"m/s")
-        print("Componente rectangular Y inicial:",self.viY,"m/s")
-        print("Componente rectangular X constante:",self.vX,"m/s")
-        print("Altura maxima:",self.yMax,"m")
-        print("Tiempo para altura maxima:",self.ts,"s")
-        print("Tiempo total de vuelo:",self.tTotal,"s")
-        print("Dezplazamiento total:",self.xTotal,"m")
-        print("Velocidad final:",self.vF,"m/s")
-        print("Componente rectangular Y final:",self.vFy,"m/s")
-        print("----------------------------------------------")
+        # print("---------------------DATOS--------------------")
+        # print("Velocidad inicial:",self.vi,"m/s")
+        # print("Componente rectangular Y inicial:",self.viY,"m/s")
+        # print("Componente rectangular X constante:",self.vX,"m/s")
+        # print("Altura maxima:",self.yMax,"m")
+        # print("Tiempo para altura maxima:",self.ts,"s")
+        # print("Tiempo total de vuelo:",self.tTotal,"s")
+        # print("Dezplazamiento total:",self.xTotal,"m")
+        # print("Velocidad final:",self.vF,"m/s")
+        # print("Componente rectangular Y final:",self.vFy,"m/s")
+        # print("----------------------------------------------")
 
         
         
@@ -193,6 +196,7 @@ class Pitagoras():
         
 class App():
     def __init__(self):
+        self.clearConsole()
         pyxel.init( width      = 192,
                     height     = 128,
                     caption    = "MoveParabolist",
@@ -201,6 +205,9 @@ class App():
         
         self.listBalls = []
         self.Triangulo = Pitagoras(10,120) 
+        self.Data = [
+            ["a","V0 (m/s)","V0y (m/s)","V0x (m/s)","Ymax (m)","Ts (seg)","Tmax (seg)","Xmax (m)","Vf (m/s)","Vfy (m/s)"]
+        ]        
         pyxel.run(self.update,self.draw)
         
     def update(self):
@@ -226,10 +233,34 @@ class App():
         
     def generateBall(self):
         color = random.randint(1, 14) # Colores random
-        # self.listBalls.append(Ball(10,120,2,color,self.Triangulo.A,self.Triangulo.h)) # Agregar objecto a la lista
         self.listBalls.append(BallMathV(10,120,2,color,48,1.9)) # Agregar objecto a la lista
+        # self.listBalls.append(Ball(10,120,2,color,self.Triangulo.A,self.Triangulo.h)) # Agregar objecto a la lista
+        if len(self.listBalls)==0:    
+            self.Data.append([self.listBalls[0].a,self.listBalls[0].vi,self.listBalls[0].viY,self.listBalls[0].vX,
+                            self.listBalls[0].yMax,self.listBalls[0].ts,self.listBalls[0].tTotal,
+                            self.listBalls[0].xTotal,self.listBalls[0].vF,self.listBalls[0].vFy])
+        else:
+            self.Data.append([self.listBalls[-1].a,self.listBalls[-1].vi,self.listBalls[-1].viY,self.listBalls[-1].vX,
+                            self.listBalls[-1].yMax,self.listBalls[-1].ts,self.listBalls[-1].tTotal,
+                            self.listBalls[-1].xTotal,self.listBalls[-1].vF,self.listBalls[-1].vFy])
+        self.clearConsole()
+        print(tabulate.tabulate(self.Data,headers="firstrow",showindex=True,tablefmt="fancy_grid",numalign="center"))
+
+        
 
     def clearListBall(self):
         self.listBalls.clear() # Limpiar lista de objetos
-        
+        self.Data.clear()
+        self.clearConsole()
+        self.Data = [
+            ["a","V0 (m/s)","V0y (m/s)","V0x (m/s)","Ymax (m)","Ts (seg)","Tmax (seg)","Xmax (m)","Vf (m/s)","Vfy (m/s)"]
+        ]
+        print(tabulate.tabulate(self.Data,headers="firstrow",showindex=True,tablefmt="fancy_grid",numalign="center"))
+
+    
+    def clearConsole(self):
+        if os.name == "nt":
+            os.system("cls")
+        else:
+            os.system("clear")
 App()
