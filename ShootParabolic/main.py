@@ -1,58 +1,61 @@
 # IMPORTAMOS LIBRERIAS
-import pyxel #
-import random
-import math
-import time
-import tabulate
-import os 
-import enum
-
-class TypeSimulator(enum.Enum):
-    Simulator     = 0
-    SimulatorData = 1
-    
-G           = 9.81
-PYXELWIDHT  = 0.1    
-
-class Pixel():
-    def __init__(self,x,y,col):
-        self.x   = x
-        self.y   = y
-        self.col = col
-    def draw(self):
-        pyxel.pset(self.x,self.y,self.col)
+import pyxel    # Libreria grafica de 8bits 
+import random   # Generador de nuemeros para los colores
+import math     # Facilita el calculo mediante funciones
+import time     # Libreria que calcula el tiempo respecto a la inicializacion del programa
+import tabulate # Tabula los deatos obtenidos para mayor presentacion
+import os       # Determina el sistema operativo para limpiar la cosola
+import enum     # Libreria para estados
+#---------------------------------------------------------------------------------------------------------------------------------
+class TypeSimulator(enum.Enum): # CLASE QUE PERMITE DETERMINAR EL ESTADO DE EJECUCION
+    Simulator     = 0 # Estado de simulacion normal
+    SimulatorData = 1 # Estado de simulacion mediante entrada en teclado con distancia y angulo
+#---------------------------------------------------------------------------------------------------------------------------------
+G = 9.81 # Constante de gravedad
+#---------------------------------------------------------------------------------------------------------------------------------
+class Pixel(): # CLASE QUE ESTABLECE LOS PIXELES DE LA TRAYECTORIA
+    #-----------------------------------------------------------------------------------------------------------------------------
+    def __init__(self,x,y,col): # CONSTRUCTOR DEL OBJETO, POSICION Y COLOR
+        # INICIALIZANDO VARIABLES DE NUESTRO OBJETO
+        self.x   = x   # X ubicacion
+        self.y   = y   # Y ubicacion
+        self.col = col # Color
+    #-----------------------------------------------------------------------------------------------------------------------------
+    def draw(self): # METODO QUE DIBUJA EL PIXEL
+        pyxel.pset(self.x,self.y,self.col) # Dibuja el pixel respecto a su ubicacion y color de creacion
+#---------------------------------------------------------------------------------------------------------------------------------
 class BallMathV():
     #-----------------------------------------------------------------------------------------------------------------------------
-    def __init__(self,x,y,r,col,a,xMax): # CONSTRUCTOR DEL OBJETO DE PELOTA RESPECTO A DATOS INSUFICIENTES
+    def __init__(self,x,y,r,col,a,xMax,tTotal): # CONSTRUCTOR DEL OBJETO DE PELOTA RESPECTO A DATOS INSUFICIENTES
         # INICIALIZANDO VARIABLES DE NUESTRO OBJETO
-        self.x    = x     # X ubicacion 
-        self.xi   = x     # X ubicancion para determinar posicion incial
-        self.y    = y     # Y ubicacion 
-        self.yi   = y     # Y ubicacion para determinar altura inicial
-        self.a    = a     # Angulo
-        self.xMax = xMax  # Distancia total recorrida
-        self.t    = 0     # Restablecemos tiempo
-        self.r    = r     # Radio
-        self.col  = col   # Color
+        self.x    = x        # X ubicacion 
+        self.xi   = x        # X ubicancion para determinar posicion incial
+        self.y    = y        # Y ubicacion 
+        self.yi   = y        # Y ubicacion para determinar altura inicial
+        self.a    = a        # Angulo
+        self.xMax = xMax     # Distancia total recorrida
+        self.t    = 0        # Restablecemos tiempo
+        self.r    = r        # Radio
+        self.col  = col      # Color
+        self.tTotal = tTotal # Tiempo total de vuelo
         # INICIALIZANDO OTROS FACTORES INDEPENDIENTES
         self.listPixel      = []                     # Lista de objetos que almacena el recorrido de la trayectoria
         self.starting_point = time.time()            # Calcula el tiempo respecto a la inicializacion del objeto
         self.dif            = pyxel.height - self.yi # Calcula la diferencia del objeto respecto al suelo
         # CALCULAMOS DATOS
         # Velocidad Inicial = hipotenusa o Fuerza lanzamiento respuesta a problema
-        self.vi     = round( math.sqrt(((G)*self.xMax)/math.sin(math.radians(2*self.a))),2)
+        self.vi = round((G*self.tTotal)/(2*math.sin(math.radians(self.a))),2)
         # DATOS COMPLEMENTARIOS
         self.viY    = round( math.sin(math.radians(self.a))*self.vi,2 ) # Velocidad Inicial Y - Componente rectangular Y
         self.vX     = round( math.cos(math.radians(self.a))*self.vi,2 ) # Velocidad vector X constante - Componente rectangular X
-        self.ts     = round( self.viY/G,2 )                             # Tiempo de subida al punto mas alto
+        self.ts     = round( self.tTotal/2,2 )                          # Tiempo de subida al punto mas alto
         self.yMax   = round( math.pow(self.viY,2)/(2*(G)),2 )           # Altura maxima alcanzada
-        self.tTotal = round( 2*self.ts,2 )                              # Tiempo total de vuelo, el doble de subida
         self.xTotal = round( self.vX*self.tTotal,2 )                    # Despazamiento en X total
-        self.vFy    = round( (-G)*self.tTotal+9.19,2 )                  # Velocidad final Y - Componente rectangular Y
-        self.vF     = round( self.vX + self.vFy,2 )                     # Velocidad final
+        self.vFy    = round( self.viY-G*self.tTotal,2 )                 # Velocidad final Y - Componente rectangular Y
+        self.vF     = round( math.sqrt(math.pow(self.vX,2)+math.pow(self.vFy,2)),2 ) # Velocidad final
     #-----------------------------------------------------------------------------------------------------------------------------
     def update(self): # METODO UPDATE QUE ACTUALIZA LA POSICION RESPECTO AL TIEMPO
-        if self.t < self.tTotal: # CALCULAMOS SI PUEDE CALCULAR MAS TIEMPO, SIMULA LA GRAVEDAD EN FUNCION DEL TIEMPO
+        if self.t <= self.tTotal: # CALCULAMOS SI PUEDE CALCULAR MAS TIEMPO, SIMULA LA GRAVEDAD EN FUNCION DEL TIEMPO
             self.elapsed_time = round(time.time()-self.starting_point,2) # Diferencia del tiempo actual con el de inicio
             self.t            = self.elapsed_time                        # Determinamos tiempo actual desde la creacion del balon
             # CALCULAMOS DESPLAZAMIENTO CON RELACION AL TIEMPO
@@ -65,120 +68,94 @@ class BallMathV():
         pyxel.circ(self.x,self.y,self.r,self.col) # Dibujando proyectil respecto a la posicion calculada
         for pixel in self.listPixel:              # Iteramos sobre los objetos de la trayectoria    
             pixel.draw()                          # Dibujamos objeto en pantalla
-        
-class Ball():
-        
-    def __init__(self,x,y,r,col,a,vi):
-        
-        self.x = x # X ubicacion
-        self.xi = x # X ubicancion para determinar posicion incial
-        self.y = y # Y ubicacion
-        self.yi = y # Y ubicacion para determinar altura inicial
-        
-        self.a = a # Angulo
-        self.vi = vi # Velocidad Inicial = hipotenusa - Fuerza lanzamiento
-                
-        self.t = 0
-        self.starting_point = time.time() # Tiempo
-        
-        self.r = r # Radio
+#---------------------------------------------------------------------------------------------------------------------------------        
+class Ball(): # CLASE PROYECTIL CON RESPECTO A VELOCIDAD INICIAL Y ANGULO
+    #-----------------------------------------------------------------------------------------------------------------------------
+    def __init__(self,x,y,r,col,a,vi): # CONSTRUCTOR, POSICION, TAMAÑO, COLOR, ANGULO Y VELOCIDAD INICAL
+        # INICIALIZAMOS DATOS DE CLASE
+        self.x   = x   # X ubicacion
+        self.xi  = x   # X ubicancion para determinar posicion incial
+        self.y   = y   # Y ubicacion
+        self.yi  = y   # Y ubicacion para determinar altura inicial
+        self.a   = a   # Angulo
+        self.vi  = vi  # Velocidad Inicial = hipotenusa - Fuerza lanzamiento
+        self.t   = 0   # Determinamos tiempo de creacion como 0
+        self.r   = r   # Radio del proyectil
         self.col = col # Color
-        
-        self.dif = + pyxel.height - self.yi
-        
-        self.listPixel = []
-        
-        self.starting_point = time.time() # Tiempo
-
-        self.viY = round((math.sin(math.radians(self.a)))*self.vi,2) # Velocidad Inicial Y
-        self.vX = round((math.cos(math.radians(self.a)))*self.vi,2) # Velocidad vector X constante
-        self.ts = round(self.viY/G,2)  # Tiempo de subida al punto mas alto, multiplico por -1 por el signo
-        self.yMax = round(math.pow(self.viY,2) / (2 * (G)),2)  # Altura maxima alcanzada
-        self.tTotal = round(2*self.ts,2) # Tiempo total de vuelo el doble de subida
-        self.xTotal = round(self.vX*self.tTotal,2) # Despazamiento en X total
-        self.vFy = round((-G)*self.tTotal + 9.19,2)
-        self.vF = round(self.vX + self.vFy,2)
-        
-        # print("---------------------DATOS--------------------")
-        # print("Velocidad inicial:",self.vi,"m/s")
-        # print("Componente rectangular Y inicial:",self.viY,"m/s")
-        # print("Componente rectangular X constante:",self.vX,"m/s")
-        # print("Altura maxima:",self.yMax,"m")
-        # print("Tiempo para altura maxima:",self.ts,"s")
-        # print("Tiempo total de vuelo:",self.tTotal,"s")
-        # print("Dezplazamiento total:",self.xTotal,"m")
-        # print("Velocidad final:",self.vF,"m/s")
-        # print("Componente rectangular Y final:",self.vFy,"m/s")
-        # print("----------------------------------------------")
-
-        
-        
-    def update(self):
-        
-        if self.t < self.tTotal:
-            self.elapsed_time = round(time.time () - self.starting_point,2)
-            self.t = self.elapsed_time
-            
-            self.x = self.xi + self.vX * self.t # multiplica la constante por el timepo para saber la poscicion
-            
-            self.y = (self.viY*self.t+(-1/2)*G*math.pow(self.t,2))  * -1 + (pyxel.height - self.dif)
-            
-            self.listPixel.append(Pixel(self.x,self.y,self.col))
-
-
-    def draw(self):
-        pyxel.circ(self.x,self.y,self.r,self.col) # Dibujando
-        for pixel in self.listPixel:
-            pixel.draw()
-        
-class Pitagoras():
-    def __init__(self,Ax,Ay):
-        
+        # DATOS COMPLEMENTARIO
+        self.starting_point = time.time()            # Tiempo de creacion para tomar referencia desde la creacion del programa
+        self.dif            = pyxel.height - self.yi # Diferencia respecto al suelo 
+        self.listPixel      = []                     # Lista de objetos que almacena la trayectoria
+        # CALCULANDO DATOS
+        self.viY    = round( (math.sin(math.radians(self.a)))*self.vi,2 ) # Velocidad Inicial Y
+        self.vX     = round( (math.cos(math.radians(self.a)))*self.vi,2 ) # Velocidad vector X constante
+        self.ts     = round( self.viY/G,2 )                               # Tiempo de subida al punto mas alto
+        self.yMax   = round( math.pow(self.viY,2)/(2*(G)),2 )             # Altura maxima alcanzada
+        self.tTotal = round( 2*self.ts,2 )                                # Tiempo total de vuelo 
+        self.xTotal = round( self.vX*self.tTotal,2 )                      # Despazamiento en X total
+        self.vFy    = round( self.viY-G*self.tTotal,2 )                   # Velocidad final Y - Componente rectangular Y
+        self.vF     = round( math.sqrt(math.pow(self.vX,2)+math.pow(self.vFy,2)),2 ) # Velocidad final
+    #---------------------------------------------------------------------------------------------------------------------------- 
+    def update(self): # METODO UPDATE QUE ACTUALIZA LA POSICION
+        if self.t <= self.tTotal: # DETERMINA SI ES POSIBLE SEGUIR MOVIENDOLA SIN PASARSE DEL TIEMPO
+            # CALCULAMOS TIEMPO
+            self.elapsed_time = round(time.time ()-self.starting_point,2) # Difrencia del tiempo actual con el de incio
+            self.t            = self.elapsed_time                         # Tiempo desde que se creo el objeto
+            # CALCULAMOS POSICION
+            self.x = self.xi+self.vX*self.t                                                   # Determinamos la posicion X  
+            self.y = (self.viY*self.t+(-1/2)*G*math.pow(self.t,2))*-1+(pyxel.height-self.dif) # Determinamos la posicion Y
+            # TRAYECTORIA
+            self.listPixel.append(Pixel(self.x,self.y,self.col)) # Almacenamos psicion actual en la trayectoria
+    #---------------------------------------------------------------------------------------------------------------------------
+    def draw(self): # METODO DRAW DIBUJA LA POSICION Y TRAYECTORIA ALMACENADA
+        pyxel.circ(self.x,self.y,self.r,self.col) # Dibuja la posicion actual del proyectil
+        for pixel in self.listPixel:              # Itera en la lista de objetos de la trayectoria
+            pixel.draw()                          # Dibuja el objeto de la lista de proyectil iterado
+#--------------------------------------------------------------------------------------------------------------------------------
+class Pitagoras(): # CLASE PARA DETERMINAR POSICION RESPECTO A 2 VECTORES, SIENDO UNO DE ELLOS EL MOUSE
+    def __init__(self,Ax,Ay): # CONSTRUCTOR DEL OBJETO, POSICION DEL OBJECTO DEL PRIMER VECTOR
+        # INICIALIZAMOS DATOS
+        # LADOS DEL TRIANGULO
         self.ca = 0 # Adyaciente
         self.co = 0 # Opuesto
-        self.h = 0 # hipotenusa
-        
+        self.h  = 0 # Hipotenusa
+        # ANGULO DE TIRO
         self.A = 0 # AnguloHallar
-
+        # POSICION DEL VECTOR 1
         self.Ax = Ax # X Objeto
         self.Ay = Ay # Y Objeto
-        
+        # POSICION DEL VECTOR 2
         self.Bx = 0 # X Superior
         self.By = 0 # Y Superor
-        
-        self.stateUP = True
-        self.stateDOWN = True
-        self.stateLEFT = True
-        
-        
-    def update(self):
+        # ESTADOS DEL LOS LADOS DEL TRIANGULO A LA VISTA
+        self.stateUP   = True # Visibilidad de la hipotenusa 
+        self.stateDOWN = True # Visibilidad de la opuesta
+        self.stateLEFT = True # Visibilidad de la adyacente
+    #-----------------------------------------------------------------------------------------------------------------------------
+    def update(self): # METODO UPDATE PARA DETERMINAR VALORES DEL TRIANGULO
+        # ACTUALIZAMOS POSICION DEL VECTOR 2
         self.Bx = pyxel.mouse_x # Capturando Posicion MouseX
         self.By = pyxel.mouse_y # Capturando Posicion MouseY
-        #self.MouseXVelocity = -pyxel.mouse_x*0.2 # Mejorando presicion de velocidad actual: 38.2
-        
-        self.ca = self.Bx - self.Ax # Hallar tamaño de cateto adyaciente (Mouse - Triangulo)
-        self.co = self.Ay - self.By # Hallar tamaño de cateto opuesto (Triangulo - mouse)
-        self.h = round(math.sqrt(math.pow(self.ca, 2) + math.pow(self.co, 2)),2) # Hallar hipotenusa
-        try:
-            self.A = round(math.degrees(math.atan((self.co/self.ca))),2) # Angulo
-        except ZeroDivisionError as e:
-            self.A = 90.00
-        
-        if (pyxel.btnp(pyxel.KEY_UP)):
-            self.stateUP = not(self.stateUP)
-        if (pyxel.btnp(pyxel.KEY_LEFT)):
-            self.stateLEFT = not(self.stateLEFT)
-        if (pyxel.btnp(pyxel.KEY_DOWN)):
-            self.stateDOWN = not(self.stateDOWN)
-            
-            
-        
-    def draw(self):
-        if self.stateUP: pyxel.line(self.Ax,self.Ay,self.Bx,self.By,15) # Hipotenusa
-        if self.stateLEFT: pyxel.line(self.Ax,self.Ay,self.Bx,self.Ay,14) # Adyacente
-        if self.stateDOWN: pyxel.line(self.Bx,self.Ay,self.Bx,self.By,13) # Opuesto
-        
-class App():
+        # CALCULAMOS LADOS DEL TRIANGULO
+        self.ca = self.Bx-self.Ax                                                 # Hallar tamaño de cateto adyaciente
+        self.co = self.Ay-self.By                                                 # Hallar tamaño de cateto opuesto
+        self.h  = round(math.sqrt(math.pow(self.ca, 2) + math.pow(self.co, 2)),2) # Hallar hipotenusa
+        # CALCULAMOS ANGULO A HALLAR CON UNA EXEPCION DE ERRORES PARA EL GRADO DE 90°
+        try:                                                             # COMPROBAMOS POSIBLIDAD
+            self.A = round(math.degrees(math.atan((self.co/self.ca))),2) # Calculamos angulo con razones trigonometricas tan(a)
+        except ZeroDivisionError as e:                                   # EN CAOS DE ERROR
+            self.A = 90.00                                               # El cateto adyacente es 0, por ende angulo es 90°
+        # COMPROBAMOS EL ESTADO DEL TRIANGULO, SEGUN EL TECLADO
+        if (pyxel.btnp(pyxel.KEY_UP)):   self.stateUP   = not(self.stateUP)   # Flecha arriba cambiamos estado hipotenusa
+        if (pyxel.btnp(pyxel.KEY_LEFT)): self.stateLEFT = not(self.stateLEFT) # Flecha iaquierda cambiamos estado adyacente
+        if (pyxel.btnp(pyxel.KEY_DOWN)): self.stateDOWN = not(self.stateDOWN) # Flecha abajo cambiamos estado de opuesto
+    #----------------------------------------------------------------------------------------------------------------------------
+    def draw(self): # METODO QUE DIBUJA EL TRIANGULO
+        if self.stateUP:   pyxel.line(self.Ax,self.Ay,self.Bx,self.By,15) # Dibuja hipotenusa
+        if self.stateLEFT: pyxel.line(self.Ax,self.Ay,self.Bx,self.Ay,14) # Dibuja adyacente
+        if self.stateDOWN: pyxel.line(self.Bx,self.Ay,self.Bx,self.By,13) # Dibuja opuesto
+#--------------------------------------------------------------------------------------------------------------------------------
+class App(): # Clase 
     
 
     def __init__(self):
@@ -224,6 +201,7 @@ class App():
                 self.clearConsole()
                 self.aInput = float(input("Digite el angulo de disparo: "))
                 self.XmaxInput = float(input("Digite la distancia(m): ")) 
+                self.tTotalInput = float(input("Digite el tiempo total de vuelo: "))
             self.generateBall() # Space -> generar bola
         if (pyxel.btnp(pyxel.KEY_R)): self.clearListBall() # R -> Resetear todo
         
@@ -231,7 +209,7 @@ class App():
         color = random.randint(1, 14) # Colores random
         
         if self.state == TypeSimulator.Simulator: self.listBalls.append(Ball(10,120,2,color,self.Triangulo.A,self.Triangulo.h)) # Agregar objecto a la lista
-        else: self.listBalls.append(BallMathV(10,120,2,color,self.aInput,self.XmaxInput)) # Agregar objecto a la lista
+        else: self.listBalls.append(BallMathV(10,120,2,color,self.aInput,self.XmaxInput,self.tTotalInput)) # Agregar objecto a la lista
 
         
         if len(self.listBalls)==0:    
