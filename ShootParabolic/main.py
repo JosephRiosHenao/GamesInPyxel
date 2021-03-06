@@ -11,11 +11,15 @@ import random
 import math
 import time
 import tabulate
-import os
+import os 
+import enum
 
-
+class TypeSimulator(enum.Enum):
+    Simulator = 0
+    SimulatorData = 1
+    
 G = 9.81
-PYXELWIDHT = 0.1 
+PYXELWIDHT = 0.1    
 
 class Pixel():
     def __init__(self,x,y,col):
@@ -59,7 +63,7 @@ class BallMathV():
         self.tTotal = round(2*self.ts,2) # Tiempo total de vuelo el doble de subida
         self.xTotal = round(self.vX*self.tTotal,2) # Despazamiento en X total
         self.vFy = round((-G)*self.tTotal + 9.19,2)
-        self.vF = round(self.vX + self.vFy)
+        self.vF = round(self.vX + self.vFy,2)
         
         # print("---------------------DATOS--------------------")
         # print("Velocidad inicial:",self.vi,"m/s")
@@ -174,6 +178,10 @@ class Pitagoras():
         self.Bx = 0 # X Superior
         self.By = 0 # Y Superor
         
+        self.stateUP = True
+        self.stateDOWN = True
+        self.stateLEFT = True
+        
         
     def update(self):
         self.Bx = pyxel.mouse_x # Capturando Posicion MouseX
@@ -187,16 +195,29 @@ class Pitagoras():
             self.A = round(math.degrees(math.atan((self.co/self.ca))),2) # Angulo
         except ZeroDivisionError as e:
             self.A = 90.00
+        
+        if (pyxel.btnp(pyxel.KEY_UP)):
+            self.stateUP = not(self.stateUP)
+        if (pyxel.btnp(pyxel.KEY_LEFT)):
+            self.stateLEFT = not(self.stateLEFT)
+        if (pyxel.btnp(pyxel.KEY_DOWN)):
+            self.stateDOWN = not(self.stateDOWN)
+            
             
         
     def draw(self):
-        pyxel.line(self.Ax,self.Ay,self.Bx,self.By,15) # Hipotenusa
-        pyxel.line(self.Ax,self.Ay,self.Bx,self.Ay,14) # Adyacente
-        pyxel.line(self.Bx,self.Ay,self.Bx,self.By,13) # Opuesto
+        if self.stateUP: pyxel.line(self.Ax,self.Ay,self.Bx,self.By,15) # Hipotenusa
+        if self.stateLEFT: pyxel.line(self.Ax,self.Ay,self.Bx,self.Ay,14) # Adyacente
+        if self.stateDOWN: pyxel.line(self.Bx,self.Ay,self.Bx,self.By,13) # Opuesto
         
 class App():
+    
+
     def __init__(self):
         self.clearConsole()
+        inputState = input("Desea usar el simulador? y/n:  ")
+        if inputState == "y": self.state = TypeSimulator.Simulator
+        else: self.state = TypeSimulator.SimulatorData
         pyxel.init( width      = 192,
                     height     = 128,
                     caption    = "MoveParabolist",
@@ -207,12 +228,13 @@ class App():
         self.Triangulo = Pitagoras(10,120) 
         self.Data = [
             ["a","V0 (m/s)","V0y (m/s)","V0x (m/s)","Ymax (m)","Ts (seg)","Tmax (seg)","Xmax (m)","Vf (m/s)","Vfy (m/s)"]
-        ]        
+        ]    
+        
         pyxel.run(self.update,self.draw)
         
     def update(self):
         self.checkInput()
-        self.Triangulo.update()
+        if self.state == TypeSimulator.Simulator: self.Triangulo.update()
         for ball in self.listBalls:
             ball.update()
     
@@ -222,19 +244,28 @@ class App():
         
         for ball in self.listBalls: # Array de objetos
             ball.draw() # Dibujar Objeto
-        self.Triangulo.draw()
-        pyxel.text(5,5,"Angulo: "+str(self.Triangulo.A)+"°",15)
-        pyxel.text(5,10,"Fuerza: "+str(self.Triangulo.h)+"m/s",15)
+        if self.state == TypeSimulator.Simulator:
+            self.Triangulo.draw()
+            pyxel.text(5,5,"Angulo: "+str(self.Triangulo.A)+"°",15)
+            pyxel.text(5,10,"Fuerza: "+str(self.Triangulo.h)+"m/s",15)
 
     
     def checkInput(self): 
-        if (pyxel.btnp(pyxel.KEY_SPACE)): self.generateBall() # Space -> generar bola
+        if (pyxel.btnp(pyxel.KEY_SPACE)):
+            if self.state == TypeSimulator.SimulatorData:
+                self.clearConsole()
+                self.aInput = float(input("Digite el angulo de disparo: "))
+                self.XmaxInput = float(input("Digite la distancia(m): ")) 
+            self.generateBall() # Space -> generar bola
         if (pyxel.btnp(pyxel.KEY_R)): self.clearListBall() # R -> Resetear todo
         
     def generateBall(self):
         color = random.randint(1, 14) # Colores random
-        self.listBalls.append(BallMathV(10,120,2,color,48,1.9)) # Agregar objecto a la lista
-        # self.listBalls.append(Ball(10,120,2,color,self.Triangulo.A,self.Triangulo.h)) # Agregar objecto a la lista
+        
+        if self.state == TypeSimulator.Simulator: self.listBalls.append(Ball(10,120,2,color,self.Triangulo.A,self.Triangulo.h)) # Agregar objecto a la lista
+        else: self.listBalls.append(BallMathV(10,120,2,color,self.aInput,self.XmaxInput)) # Agregar objecto a la lista
+
+        
         if len(self.listBalls)==0:    
             self.Data.append([self.listBalls[0].a,self.listBalls[0].vi,self.listBalls[0].viY,self.listBalls[0].vX,
                             self.listBalls[0].yMax,self.listBalls[0].ts,self.listBalls[0].tTotal,
@@ -263,4 +294,7 @@ class App():
             os.system("cls")
         else:
             os.system("clear")
+            
+
+
 App()
