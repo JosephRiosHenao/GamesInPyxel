@@ -155,92 +155,83 @@ class Pitagoras(): # CLASE PARA DETERMINAR POSICION RESPECTO A 2 VECTORES, SIEND
         if self.stateLEFT: pyxel.line(self.Ax,self.Ay,self.Bx,self.Ay,14) # Dibuja adyacente
         if self.stateDOWN: pyxel.line(self.Bx,self.Ay,self.Bx,self.By,13) # Dibuja opuesto
 #--------------------------------------------------------------------------------------------------------------------------------
-class App(): # Clase 
-    
-
-    def __init__(self):
-        self.clearConsole()
-        inputState = input("Desea usar el simulador? y/n:  ")
-        if inputState == "y": self.state = TypeSimulator.Simulator
-        else: self.state = TypeSimulator.SimulatorData
-        pyxel.init( width      = 192,
-                    height     = 128,
-                    caption    = "MoveParabolist",
-                    fps        = 60,
-                    fullscreen = False )
-        
-        self.listBalls = []
-        self.Triangulo = Pitagoras(10,120) 
-        self.Data = [
-            ["a","V0 (m/s)","V0y (m/s)","V0x (m/s)","Ymax (m)","Ts (seg)","Tmax (seg)","Xmax (m)","Vf (m/s)","Vfy (m/s)"]
-        ]    
-        
-        pyxel.run(self.update,self.draw)
-        
-    def update(self):
-        self.checkInput()
-        if self.state == TypeSimulator.Simulator: self.Triangulo.update()
-        for ball in self.listBalls:
-            ball.update()
-    
-    def draw (self):
-        
-        pyxel.cls(0) # Fondo
-        
-        for ball in self.listBalls: # Array de objetos
-            ball.draw() # Dibujar Objeto
-        if self.state == TypeSimulator.Simulator:
-            self.Triangulo.draw()
-            pyxel.text(5,5,"Angulo: "+str(self.Triangulo.A)+"°",15)
-            pyxel.text(5,10,"Fuerza: "+str(self.Triangulo.h)+"m/s",15)
-
-    
-    def checkInput(self): 
-        if (pyxel.btnp(pyxel.KEY_SPACE)):
-            if self.state == TypeSimulator.SimulatorData:
-                self.clearConsole()
-                self.aInput = float(input("Digite el angulo de disparo: "))
-                self.XmaxInput = float(input("Digite la distancia(m): ")) 
-                self.tTotalInput = float(input("Digite el tiempo total de vuelo: "))
-            self.generateBall() # Space -> generar bola
+class App(): # CLASE PRINCIPAL DEL PROGRAMA
+    def __init__(self): # INICIALIZACION
+        # INICIALIZACION DE ESTADO
+        self.clearConsole()                                        # Borramos consola
+        inputState = input("Desea usar el simulador? y/n:  ")      # Preguntamos estado
+        if inputState == "y": self.state = TypeSimulator.Simulator # Asignamos estado de simulacion
+        else: self.state = TypeSimulator.SimulatorData             # Asignamos estado de simulacion mediante datos
+        # INICIALIZAR VENTANA
+        pyxel.init( width      = 192,              # Ancho de ventana
+                    height     = 128,              # Altura de ventana
+                    caption    = "MoveParabolist", # Titulo de la ventana
+                    fps        = 60,               # FPS del programa
+                    fullscreen = False,            # Estado de pantalla inicial
+                    scale      = 1)                # Escala de la ventana inicial
+        # INICIALIZACION DE VARIBALES
+        self.listBalls = []                # Lista de objetos con proyectiles
+        self.Triangulo = Pitagoras(10,120) # Cracion del triangulo respecto al vector 1 (X,Y)
+        # INICIALIZACION DE NOMBRES DE COLUMNAS EN LA BD
+        self.Data = [["a","V0 (m/s)","V0y (m/s)","V0x (m/s)","Ymax (m)","Ts (seg)","Tmax (seg)","Xmax (m)","Vf (m/s)","Vfy (m/s)"]]               
+        pyxel.run(self.update,self.draw) # Asignamos los metodos de actualizacion para logica y dibujo
+    #-----------------------------------------------------------------------------------------------------------------------------
+    def update(self): # METODOD DE LOGICA
+        self.checkInput() # Comprueba la pulsacion de teclas
+        if self.state == TypeSimulator.Simulator: self.Triangulo.update() # Si esta en modo simulacion ejecuta el triangulo
+        for ball in self.listBalls: # Iteramos en la lista de proyectiles
+            ball.update()           # Actualizamos la posicion de los proyectiles
+    #-----------------------------------------------------------------------------------------------------------------------------
+    def draw (self): # MEOTODO DE DIBUJO
+        pyxel.cls(0)                # Color de fondo
+        for ball in self.listBalls: # Iteramos en la lista de proyectiles
+            ball.draw()             # Actualizamos posicion en pantalla
+        if self.state == TypeSimulator.Simulator: # Comprobamos el estado en simulacion
+            self.Triangulo.draw()                 # Dibujar triangulo
+            pyxel.text(5,5,"Angulo: "+str(self.Triangulo.A)+"°",15)    # Dibujamos angulo del triangulo
+            pyxel.text(5,10,"Fuerza: "+str(self.Triangulo.h)+"m/s",15) # Dibujamos fuerza de disparo - hipotenusa
+    #----------------------------------------------------------------------------------------------------------------------------
+    def checkInput(self): # METODO COMPROBADOR DE ENTRADA DEL TECLADO
+        if (pyxel.btnp(pyxel.KEY_SPACE)): # Comprobacion de tecla espacio
+            if self.state == TypeSimulator.SimulatorData: # Si esta en modo simulacion con entrada
+                self.clearConsole()                       # Ejecutamos el metodo para borrar consola
+                self.aInput = float(input("Digite el angulo de disparo: "))          # Pregunta angulo
+                self.XmaxInput = float(input("Digite la distancia(m): "))            # Pregunta distancia
+                self.tTotalInput = float(input("Digite el tiempo total de vuelo: ")) # Pregunta tiempo de vuelo
+            self.generateBall()                                                      # Genera el proyectil
         if (pyxel.btnp(pyxel.KEY_R)): self.clearListBall() # R -> Resetear todo
-        
-    def generateBall(self):
-        color = random.randint(1, 14) # Colores random
-        
-        if self.state == TypeSimulator.Simulator: self.listBalls.append(Ball(10,120,2,color,self.Triangulo.A,self.Triangulo.h)) # Agregar objecto a la lista
-        else: self.listBalls.append(BallMathV(10,120,2,color,self.aInput,self.XmaxInput,self.tTotalInput)) # Agregar objecto a la lista
-
-        
-        if len(self.listBalls)==0:    
+    #----------------------------------------------------------------------------------------------------------------------------
+    def generateBall(self): # METODO PARA GENERAR PROYECTIL
+        # AGREGAR PROYECTIL A LA LISTA
+        color = random.randint(1, 14) # Genera un color para el proyectil
+        if self.state == TypeSimulator.Simulator: # Compreuba estado de simulacion
+            self.listBalls.append(Ball(10,120,2,color,self.Triangulo.A,self.Triangulo.h))           
+        else:                                     # Si no es segun la entrada del teclado
+            self.listBalls.append(BallMathV(10,120,2,color,self.aInput,self.XmaxInput,self.tTotalInput))
+        # AGREGA DATOS A LA BASE DE DATOS
+        if len(self.listBalls)==0: # Comprueba la longitud de la lista
             self.Data.append([self.listBalls[0].a,self.listBalls[0].vi,self.listBalls[0].viY,self.listBalls[0].vX,
                             self.listBalls[0].yMax,self.listBalls[0].ts,self.listBalls[0].tTotal,
-                            self.listBalls[0].xTotal,self.listBalls[0].vF,self.listBalls[0].vFy])
-        else:
+                            self.listBalls[0].xTotal,self.listBalls[0].vF,self.listBalls[0].vFy]) 
+        else:                      # Si no entonces agrega el ultimo dato agregado
             self.Data.append([self.listBalls[-1].a,self.listBalls[-1].vi,self.listBalls[-1].viY,self.listBalls[-1].vX,
                             self.listBalls[-1].yMax,self.listBalls[-1].ts,self.listBalls[-1].tTotal,
                             self.listBalls[-1].xTotal,self.listBalls[-1].vF,self.listBalls[-1].vFy])
-        self.clearConsole()
+        # IMPRIMIR BASE DE DATO
+        self.clearConsole() # Borra consola y la imprime
         print(tabulate.tabulate(self.Data,headers="firstrow",showindex=True,tablefmt="fancy_grid",numalign="center"))
-
-        
-
-    def clearListBall(self):
-        self.listBalls.clear() # Limpiar lista de objetos
-        self.Data.clear()
-        self.clearConsole()
-        self.Data = [
-            ["a","V0 (m/s)","V0y (m/s)","V0x (m/s)","Ymax (m)","Ts (seg)","Tmax (seg)","Xmax (m)","Vf (m/s)","Vfy (m/s)"]
-        ]
+    #----------------------------------------------------------------------------------------------------------------------------
+    def clearListBall(self): # METODO, REINICIA LA BD, LISTAS Y PANATALLA
+        self.listBalls.clear() # Limpia la lista de proyectiles
+        self.Data.clear()      # Limpia la base de datos
+        self.clearConsole()    # Limpia consola y agrega nombres a las columnas e imprime
+        self.Data = [["a","V0 (m/s)","V0y (m/s)","V0x (m/s)","Ymax (m)","Ts (seg)","Tmax (seg)","Xmax (m)","Vf (m/s)","Vfy (m/s)"]]
         print(tabulate.tabulate(self.Data,headers="firstrow",showindex=True,tablefmt="fancy_grid",numalign="center"))
-
-    
-    def clearConsole(self):
-        if os.name == "nt":
-            os.system("cls")
-        else:
-            os.system("clear")
-            
-
-
-App()
+    #----------------------------------------------------------------------------------------------------------------------------
+    def clearConsole(self):    # METODO DE LIMPIAR CONSOLA
+        if os.name == "nt":    # Comprueba el tipo de sistema operativo
+            os.system("cls")   # Limpia con comando cls
+        else:                  # Si no 
+            os.system("clear") # Limpia con comando clear
+#--------------------------------------------------------------------------------------------------------------------------------
+App() # EJECUTAMOS PROGRAMA
