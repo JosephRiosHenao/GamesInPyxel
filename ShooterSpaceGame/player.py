@@ -1,5 +1,5 @@
 import pyxel
-
+from modelPoint import Point
 
 class Player():
     def __init__(self,w,h,x,y,col):
@@ -8,9 +8,14 @@ class Player():
         self.x = x
         self.y = y
         self.col = col
-    
+        self.angle = 0
+        self.speedRotation = 0.1
+        self.points = [
+            
+        ]
+        
     def update(self):
-        pass
-    
+        self.angle += self.speedRotation
+        
     def draw(self):
-        pyxel.line(self.x,self.y,self.x-self.w,self.y+self.h,1)
+        pass

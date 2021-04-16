@@ -1,4 +1,4 @@
-from ShooterSpaceGame.player import *
+import player 
 import pyxel
 
 class Game():
@@ -8,15 +8,16 @@ class Game():
             height=h,
             caption='ShooterGame',
         )
-        self.player = Player(10,20,(pyxel.width/2),(pyxel.height/2),1)
+        self.player = player.Player(10,20,(pyxel.width/2),(pyxel.height/2),1)
         pyxel.run(self.update,self.draw)
         
     def update(self):
-        pass
+        self.player.update()
+        
     
     def draw(self):
         pyxel.cls(0)
-        self.player.update()
+        self.player.draw()
         
 if __name__ == '__main__':
     Game(192,128)
