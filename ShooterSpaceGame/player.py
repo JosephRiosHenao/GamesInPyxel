@@ -1,21 +1,50 @@
 import pyxel
-from modelPoint import Point
+import rotateEngine
+from time import time
+
+VELOCITY = 1
+ROTATION_VELOCITY = 0.1
 
 class Player():
     def __init__(self,w,h,x,y,col):
-        self.w = w
-        self.h = h
-        self.x = x
-        self.y = y
+        self.size = [w,h]
+        self.pos = [x,y]
         self.col = col
         self.angle = 0
-        self.speedRotation = 0.1
         self.points = [
-            
+            [self.pos[0],self.pos[1]-self.size[1]], #SUPERIOR
+            [self.pos[0]+self.size[0]/2,self.pos[1]+self.size[1]], #DERECHA
+            [self.pos[0],self.pos[1]], #ABAJO
+            [self.pos[0]-self.size[0]/2,self.pos[1]+self.size[1]], #IZQUIERDA
         ]
+        self.pt = time()
         
     def update(self):
-        self.angle += self.speedRotation
-        
+        t = time()
+        dt = t - self.pt
+        self.pt = t
+        self.angle += ROTATION_VELOCITY * dt
+        self.updateHeadPos()
+        self.keyDownScan()
+        self.points = rotateEngine.update_points(self.points,self.points[2],self.pos,self.angle)
+
+                
     def draw(self):
-        pass
+        for pixel in self.points:
+            pyxel.pset(pixel[0],pixel[1],11)
+
+    def keyDownScan(self):
+        if (pyxel.btn(pyxel.KEY_W)):
+            self.pos[1]-=VELOCITY
+        if (pyxel.btn(pyxel.KEY_A)):
+            self.pos[0]-=VELOCITY
+        if (pyxel.btn(pyxel.KEY_S)):
+            self.pos[1]+=VELOCITY
+        if (pyxel.btn(pyxel.KEY_D)):
+            self.pos[0]+=VELOCITY
+                
+    def updateHeadPos(self):
+        newPoint = self.points[2]
+        newPoint[0] = self.pos[0]
+        newPoint[1] = self.pos[1]
+        self.points[2] = newPoint

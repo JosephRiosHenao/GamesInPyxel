@@ -8,7 +8,7 @@ class Game():
             height=h,
             caption='ShooterGame',
         )
-        self.player = player.Player(10,20,(pyxel.width/2),(pyxel.height/2),1)
+        self.player = player.Player(5,5,(pyxel.width/2),(pyxel.height/2),1)
         pyxel.run(self.update,self.draw)
         
     def update(self):
