@@ -26,7 +26,7 @@ class Player():
     def update(self):
         self.resetFormPosition()
         self.angleController.update(self.pos[0], self.pos[1])
-        self.angle = 270
+        self.angle = 270-self.angleController.Angulo
         if (pyxel.btnp(pyxel.KEY_SPACE)): self.angle += 0
         self.updateHeadPos()
         self.keyDownScan()
@@ -37,6 +37,12 @@ class Player():
     def draw(self):
         for pixel in self.points:
             pyxel.pset(pixel[0],pixel[1],11)
+        for i in range(1,len(self.points)):
+            point = self.points[i-1]
+            nextPoint = self.points[i]
+            pyxel.line(point[0],point[1],nextPoint[0],nextPoint[1],self.col )
+        pyxel.line(self.points[0][0],self.points[0][1],self.points[3][0],self.points[3][1],self.col )
+        # pyxel.trib(self.points[0][0],self.points[0][1],self.points[1][0],self.points[1][1],self.points[3][0],self.points[3][1],self.col)
         self.angleController.draw()
         
     def keyDownScan(self):
