@@ -1,5 +1,7 @@
+from angleMouse import Pitagoras
 import pyxel
 import rotateEngine
+from angleMouse import Pitagoras
 from time import time
 
 VELOCITY = 1
@@ -18,21 +20,22 @@ class Player():
             [self.pos[0]-self.size[0]/2,self.pos[1]+self.size[1]], #IZQUIERDA
         ]
         self.pt = time()
+        self.angleController = Pitagoras(self.pos[0], self.pos[1])
         
     def update(self):
-        t = time()
-        dt = t - self.pt
-        self.pt = t
-        self.angle += ROTATION_VELOCITY * dt
+        self.angleController.update(self.pos[0], self.pos[1])
+        self.angle = 1
         self.updateHeadPos()
         self.keyDownScan()
         self.points = rotateEngine.update_points(self.points,self.points[2],self.pos,self.angle)
-
                 
+        #COMPROBAR SECUAENCIA HASTA ANGULO
+        
     def draw(self):
         for pixel in self.points:
             pyxel.pset(pixel[0],pixel[1],11)
-
+        self.angleController.draw()
+        
     def keyDownScan(self):
         if (pyxel.btn(pyxel.KEY_W)):
             self.pos[1]-=VELOCITY
