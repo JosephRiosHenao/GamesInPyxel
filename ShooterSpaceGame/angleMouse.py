@@ -42,12 +42,13 @@ class Pitagoras(): # CLASE PARA DETERMINAR POSICION RESPECTO A 2 VECTORES, SIEND
         if (pyxel.btnp(pyxel.KEY_LEFT)): self.stateLEFT = not(self.stateLEFT) # Flecha iaquierda cambiamos estado adyacente
         if (pyxel.btnp(pyxel.KEY_DOWN)): self.stateDOWN = not(self.stateDOWN) # Flecha abajo cambiamos estado de opuesto
         if (self.ca<0 and self.co>0): self.Angulo = self.A # CUADRANTE 2 OK
-        if (self.ca>0 and self.co<0): self.Angulo = self.A +180 # CUADRANTE 4 OK
-        if (self.ca<0 and self.co<0): self.Angulo = self.A - 360 *-1 # CUADRANTE 3 OK
+        if (self.ca>0 and self.co<0): self.Angulo = self.A + 180 # CUADRANTE 4 OK
+        if (self.ca<0 and self.co<0): self.Angulo = self.A  # CUADRANTE 3 OK
         if (self.ca>0 and self.co>0): self.Angulo = self.A - 180 *-1 # CUADRANTE 1 OK
+        self.angle = 270-self.Angulo
     #----------------------------------------------------------------------------------------------------------------------------
     def draw(self): # METODO QUE DIBUJA EL TRIANGULO
         if self.stateUP:   pyxel.line(self.Ax,self.Ay,self.Bx,self.By,15) # Dibuja hipotenusa
         if self.stateLEFT: pyxel.line(self.Ax,self.Ay,self.Bx,self.Ay,14) # Dibuja adyacente
         if self.stateDOWN: pyxel.line(self.Bx,self.Ay,self.Bx,self.By,13) # Dibuja opuesto
-        pyxel.text(10,10,str(self.Angulo),15)
+        # pyxel.text(10,10,str(270-self.Angulo),15)

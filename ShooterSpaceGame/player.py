@@ -26,7 +26,7 @@ class Player():
     def update(self):
         self.resetFormPosition()
         self.angleController.update(self.pos[0], self.pos[1])
-        self.angle = 270-self.angleController.Angulo
+        self.angle = self.angleController.angle
         if (pyxel.btnp(pyxel.KEY_SPACE)): self.angle += 0
         self.updateHeadPos()
         self.keyDownScan()
