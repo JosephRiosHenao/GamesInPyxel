@@ -1,3 +1,4 @@
+import math
 from angleMouse import Pitagoras
 import pyxel
 import rotateEngine
@@ -23,11 +24,13 @@ class Player():
         self.angleController = Pitagoras(self.pos[0], self.pos[1])
         
     def update(self):
+        self.resetFormPosition()
         self.angleController.update(self.pos[0], self.pos[1])
-        self.angle = 1
+        self.angle = 270
+        if (pyxel.btnp(pyxel.KEY_SPACE)): self.angle += 0
         self.updateHeadPos()
         self.keyDownScan()
-        self.points = rotateEngine.update_points(self.points,self.points[2],self.pos,self.angle)
+        self.points = rotateEngine.update_points(self.points,self.points[2],self.pos,math.radians(self.angle))
                 
         #COMPROBAR SECUAENCIA HASTA ANGULO
         
@@ -51,3 +54,11 @@ class Player():
         newPoint[0] = self.pos[0]
         newPoint[1] = self.pos[1]
         self.points[2] = newPoint
+        
+    def resetFormPosition(self):
+        self.points = [
+            [self.pos[0],self.pos[1]-self.size[1]], #SUPERIOR
+            [self.pos[0]+self.size[0]/2,self.pos[1]+self.size[1]], #DERECHA
+            [self.pos[0],self.pos[1]], #ABAJO
+            [self.pos[0]-self.size[0]/2,self.pos[1]+self.size[1]], #IZQUIERDA
+        ]
