@@ -1,5 +1,7 @@
 import math
-from shoot import Shoot
+import primaryShoot
+import secondShoot
+import thirdShoot
 from angleMouse import Pitagoras
 import pyxel
 import rotateEngine
@@ -60,7 +62,11 @@ class Player():
         if (pyxel.btn(pyxel.KEY_D)):
             self.pos[0]+=VELOCITY
         if (pyxel.btnp(pyxel.MOUSE_LEFT_BUTTON)):
-            self.shoot()
+            self.shoot(1)
+        if (pyxel.btnp(pyxel.MOUSE_RIGHT_BUTTON)):
+            self.shoot(2)
+        if (pyxel.btnp(pyxel.KEY_SPACE)):
+            self.shoot(3)
                 
     def updateHeadPos(self):
         newPoint = self.points[2]
@@ -75,5 +81,9 @@ class Player():
             [self.pos[0],self.pos[1]], #ABAJO
             [self.pos[0]-self.size[0]/2,self.pos[1]+self.size[1]], #IZQUIERDA
         ]
-    def shoot(self):
-        self.shoots.append( Shoot(self.pos[0],self.pos[1],0.5,15,self.angle,100 ))
+    def shoot(self,type):
+        if (type==1): self.shoots.append( primaryShoot.Shoot(self.pos[0],self.pos[1],0.5,15,self.angle,100 ))
+        if (type==2): self.shoots.append( secondShoot.Shoot(self.pos[0],self.pos[1],2,14,self.angle,50,25))
+        if (type==3): self.shoots.append( thirdShoot.Shoot(self.pos[0],self.pos[1],2,14,self.angle,50,8))
+
+    
