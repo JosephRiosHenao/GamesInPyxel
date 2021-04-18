@@ -7,8 +7,9 @@ import pyxel
 import rotateEngine
 from time import time
 
-VELOCITY = 1
-ROTATION_VELOCITY = 0.1
+VELOCITY = 0.1
+REDUCE_VELOCITY = 0.01
+MAX_VELOCITY = 1
 
 class Player():
     def __init__(self,w,h,x,y,col):
@@ -16,6 +17,7 @@ class Player():
         self.pos = [x,y]
         self.col = col
         self.angle = 0
+        self.velocity = [0,0]
         self.points = [
             [self.pos[0],self.pos[1]-self.size[1]], #SUPERIOR
             [self.pos[0]+self.size[0]/2,self.pos[1]+self.size[1]], #DERECHA
@@ -54,19 +56,38 @@ class Player():
         
     def keyDownScan(self):
         if (pyxel.btn(pyxel.KEY_W)):
-            self.pos[1]-=VELOCITY
+            self.velocity[1] -=VELOCITY
         if (pyxel.btn(pyxel.KEY_A)):
-            self.pos[0]-=VELOCITY
+            self.velocity[0] -=VELOCITY
         if (pyxel.btn(pyxel.KEY_S)):
-            self.pos[1]+=VELOCITY
+            self.velocity[1] +=VELOCITY
         if (pyxel.btn(pyxel.KEY_D)):
-            self.pos[0]+=VELOCITY
+            self.velocity[0] +=VELOCITY
         if (pyxel.btnp(pyxel.MOUSE_LEFT_BUTTON)):
             self.shoot(1)
         if (pyxel.btnp(pyxel.MOUSE_RIGHT_BUTTON)):
             self.shoot(2)
         if (pyxel.btnp(pyxel.KEY_SPACE)):
             self.shoot(3)
+            
+        self.pos[1]+=self.velocity[1] 
+        self.pos[0]+=self.velocity[0] 
+
+        if (self.velocity[0] >0):
+            self.velocity[0] -= REDUCE_VELOCITY
+        if (self.velocity[0] <0):
+            self.velocity[0] += REDUCE_VELOCITY
+            
+        if (self.velocity[1] >0):
+            self.velocity[1] -= REDUCE_VELOCITY
+        if (self.velocity[1] <0):
+            self.velocity[1] += REDUCE_VELOCITY
+            
+        if (self.velocity[0] < (MAX_VELOCITY*-1)): self.velocity[0] = MAX_VELOCITY*-1
+        if (self.velocity[0] > MAX_VELOCITY): self.velocity[0] = MAX_VELOCITY
+        
+        if (self.velocity[1] < (MAX_VELOCITY*-1)): self.velocity[1] = MAX_VELOCITY*-1
+        if (self.velocity[1] > MAX_VELOCITY): self.velocity[1] = MAX_VELOCITY
                 
     def updateHeadPos(self):
         newPoint = self.points[2]
