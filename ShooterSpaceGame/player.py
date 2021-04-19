@@ -108,7 +108,7 @@ class Player():
     def shoot(self,type):
         if (type==1): self.shoots.append( primaryShoot.Shoot(self.pos[0],self.pos[1],0.5,15,self.angle,100 ))
         if (type==2): self.shoots.append( secondShoot.Shoot(self.pos[0],self.pos[1],2,14,self.angle,50,25))
-        if (type==3): self.shoots.append( thirdShoot.Shoot(self.pos[0],self.pos[1],2,14,self.angle,50,8))
+        if (type==3): self.shoots.append( thirdShoot.Shoot(self.pos[0],self.pos[1],2,14,self.angle,50,4))
         if (type==4): self.shoots.append( thirdShoot.Shoot(self.pos[0],self.pos[1],2,14,self.angle,50,8))
         self.defineIndex()
 
@@ -119,7 +119,6 @@ class Player():
     def removeShoot(self,index):
         self.shoots.pop(index)
         self.defineIndex()
-        print(self.shoots)
 
     
     def calculateShoot(self):
