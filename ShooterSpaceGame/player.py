@@ -38,7 +38,8 @@ class Player():
         
         for shoot in self.shoots:
             shoot.update()
-        #COMPROBAR SECUAENCIA HASTA ANGULO
+        self.calculateShoot()
+        
         
     def draw(self):
         for pixel in self.points:
@@ -69,6 +70,8 @@ class Player():
             self.shoot(2)
         if (pyxel.btnp(pyxel.KEY_SPACE)):
             self.shoot(3)
+        if (pyxel.btnp(pyxel.KEY_Q)):
+            print(self.shoots)
             
         self.pos[1]+=self.velocity[1] 
         self.pos[0]+=self.velocity[0] 
@@ -110,12 +113,16 @@ class Player():
         self.defineIndex()
 
     def defineIndex(self):
-        for i in range(len(self.shoots)):
+        for i in range(0,len(self.shoots)):
             self.shoots[i].index = i
             
     def removeShoot(self,index):
         self.shoots.pop(index)
         self.defineIndex()
+        print(self.shoots)
+
     
     def calculateShoot(self):
-        for shoot in self.shoots
+        for shoot in self.shoots:
+            if (shoot.destroy==True): self.removeShoot(shoot.index)
+            elif (shoot.destroy==True): self.removeShoot(shoot.index)

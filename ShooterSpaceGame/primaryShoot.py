@@ -23,9 +23,13 @@ class Shoot():
         self.vX = round((math.cos(math.radians(self.a)))*self.vi,2) # Velocidad vector X constante
 
         self.index = 0
+        self.destroy = False
     
     def update(self):
-                
+        
+        if (self.x > pyxel.width or self.x < 0): self.destroy = True
+        if (self.y > pyxel.height or self.y < 0): self.destroy = True
+            
         self.elapsed_time = round(time.time () - self.starting_point,2)
         self.t = self.elapsed_time
 

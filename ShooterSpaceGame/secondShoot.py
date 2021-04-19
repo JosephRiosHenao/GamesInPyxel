@@ -29,7 +29,7 @@ class Shoot():
         self.angle = 0
         
         self.index = 0
-
+        self.destroy = False
         
         self.state = True
     
@@ -37,6 +37,11 @@ class Shoot():
                 
         self.elapsed_time = round(time.time () - self.starting_point,2)
         self.t = self.elapsed_time
+        
+        if (self.x > pyxel.width or self.x < 0): self.destroy = True
+        if (self.y > pyxel.height or self.y < 0): self.destroy = True
+        
+        
 
         if (self.t<0.5):
             self.x = self.xi + self.vX * self.t # multiplica la constante por el timepo para saber la poscicion
@@ -44,8 +49,13 @@ class Shoot():
         else:
             if (self.state==True): self.generateExplosion()
             self.state=False
+            
+            self.numShoot = 0
             for shoot in self.miniShoots:
                 shoot.update()
+                if (shoot.destroy == True): self.numShoot+=1
+            if (self.numShoot == len(self.miniShoots)): self.destroy = True
+                
         
     def draw(self):
         if (self.t<0.5):
