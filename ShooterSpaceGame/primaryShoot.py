@@ -22,6 +22,7 @@ class Shoot():
         self.viY = round((math.sin(math.radians(self.a)))*self.vi,2) # Velocidad Inicial Y
         self.vX = round((math.cos(math.radians(self.a)))*self.vi,2) # Velocidad vector X constante
 
+        self.index = 0
     
     def update(self):
                 

@@ -28,6 +28,9 @@ class Shoot():
         self.angleShoot = 360/self.explosion
         self.angle = 0
         
+        self.index = 0
+
+        
         self.state = True
     
     def update(self):

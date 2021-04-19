@@ -22,6 +22,8 @@ class Shoot():
         self.r = r # Radio
         self.col = col # Color
     
+        self.index = 0
+        
         self.viY = round((math.sin(math.radians(self.a)))*self.vi,2) # Velocidad Inicial Y
         self.vX = round((math.cos(math.radians(self.a)))*self.vi,2) # Velocidad vector X constante
         self.miniShoots = []
