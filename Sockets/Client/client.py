@@ -6,7 +6,10 @@ STEPS = 1
 
 class Conection():
     def __init__(self):
-        pass
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.sock.connect(('localhost', 8000))
+        print('Conectando...')
+        
     def update(self):
         pass
 
@@ -23,10 +26,12 @@ class Game():
     def __init__(self):
         pyxel.init(180,120)
         self.player = Cube(pyxel.width/2,pyxel.height/2,2)
+        self.client = Conection()
         pyxel.run(self.update,self.draw)
         
     def update(self):
         self.keyboardUpdate()
+        self.client.update()
         
     def draw(self):
         pyxel.cls(pyxel.COLOR_LIME)
