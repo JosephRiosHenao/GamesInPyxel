@@ -66,5 +66,5 @@ class Shoot():
     def generateExplosion(self):
         for ex in range(self.explosion):
             self.angle += self.angleShoot 
-            self.miniShoots.append( secondShoot.Shoot(self.x,self.y,2,14,self.angle,50,25))
+            self.miniShoots.append( secondShoot.Shoot(self.x,self.y,1.5,14,self.angle,50,25))
         
