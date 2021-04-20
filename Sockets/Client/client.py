@@ -1,7 +1,14 @@
 import pyxel
 import random
+import socket
 
 STEPS = 1
+
+class Conection():
+    def __init__(self):
+        pass
+    def update(self):
+        pass
 
 class Cube():
     def __init__(self,x,y,r):
