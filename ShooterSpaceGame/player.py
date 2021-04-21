@@ -18,6 +18,7 @@ class Player():
         self.col = col
         self.angle = 0
         self.velocity = [0,0]
+        self.stateShoot = True
         self.points = [
             [self.pos[0],self.pos[1]-self.size[1]], #SUPERIOR
             [self.pos[0]+self.size[0]/2,self.pos[1]+self.size[1]], #DERECHA
@@ -27,7 +28,8 @@ class Player():
         self.shoots = []
         self.angleController = Pitagoras(self.pos[0], self.pos[1])
         
-    def update(self):
+    def update(self, stateShoot):
+        self.stateShoot = stateShoot
         self.resetFormPosition()
         self.angleController.update(self.pos[0], self.pos[1])
         self.angle = self.angleController.angle
@@ -64,11 +66,11 @@ class Player():
             self.velocity[1] +=VELOCITY
         if (pyxel.btn(pyxel.KEY_D)):
             self.velocity[0] +=VELOCITY
-        if (pyxel.btnp(pyxel.MOUSE_LEFT_BUTTON)):
+        if (pyxel.btnp(pyxel.MOUSE_LEFT_BUTTON) and self.stateShoot):
             self.shoot(1)
-        if (pyxel.btnp(pyxel.MOUSE_RIGHT_BUTTON)):
+        if (pyxel.btnp(pyxel.MOUSE_RIGHT_BUTTON) and self.stateShoot):
             self.shoot(2)
-        if (pyxel.btnp(pyxel.KEY_SPACE)):
+        if (pyxel.btnp(pyxel.KEY_SPACE) and self.stateShoot):
             self.shoot(3)
         if (pyxel.btnp(pyxel.KEY_Q)):
             print(self.shoots)

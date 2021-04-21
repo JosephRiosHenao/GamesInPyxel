@@ -20,7 +20,7 @@ class Game():
     def update(self):
         
         
-        self.player.update()
+        self.player.update(self.mouse.stateShoot)
         self.mouse.update()
         self.keyboard.update()
     
