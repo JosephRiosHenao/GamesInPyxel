@@ -34,8 +34,7 @@ class Conection():
                     print(response)
             
             # ENVIAR DATOS
-            if ((self.myPos[0]>0 and self.myPos[0]<pyxel.width) and (self.myPos[1]>0 and self.myPos[1]<pyxel.height) ): 
-                self.sock.send("{}-{}-".format(self.myPos[0],self.myPos[1]).encode())
+            self.sock.send("{}-{}-".format(self.myPos[0],self.myPos[1]).encode())
             
 
 class Cube():

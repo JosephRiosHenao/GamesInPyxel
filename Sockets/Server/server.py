@@ -24,8 +24,7 @@ class Conection():
             print('Nueva conexion {}'.format(addr))
             while (True):
                 #ENVIAR DATOS
-                if ((self.myPos[0]>0 and self.myPos[0]<pyxel.width) and (self.myPos[1]>0 and self.myPos[1]<pyxel.height) ): 
-                    conexion.send("{}-{}-".format(self.myPos[0],self.myPos[1]).encode())
+                conexion.send("{}-{}-".format(self.myPos[0],self.myPos[1]).encode())
                 
                 # RECIBIR DATOS
                 response = conexion.recv(1024).decode()
