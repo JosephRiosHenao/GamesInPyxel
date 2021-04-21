@@ -58,9 +58,9 @@ class Mouse():
     def draw(self):
         for pixel in self.pixels:
             pyxel.pset(pixel[0],pixel[1],self.col)
-        if (not self.stateShoot):
-            if (pyxel.btn(pyxel.MOUSE_LEFT_BUTTON) or pyxel.btn(pyxel.MOUSE_RIGHT_BUTTON) or pyxel.btn(pyxel.KEY_SPACE)):
-                pyxel.text((self.pos[0])-((pyxel.FONT_WIDTH*len("RECARGANDO..."))/2),self.pos[1]+(self.margin*2),"RECARGANDO...",1)
+        # if (not self.stateShoot):
+        #     if (pyxel.btn(pyxel.MOUSE_LEFT_BUTTON) or pyxel.btn(pyxel.MOUSE_RIGHT_BUTTON) or pyxel.btn(pyxel.KEY_SPACE)):
+        #         pyxel.text((self.pos[0])-((pyxel.FONT_WIDTH*len("RECARGANDO..."))/2),self.pos[1]+(self.margin*2),"RECARGANDO...",1)
             
     def setTurn(self,grades):
         if (self.stateShoot):
