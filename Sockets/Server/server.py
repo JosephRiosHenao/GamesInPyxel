@@ -3,9 +3,7 @@ import random
 import socket
 import threading
 
-STEPS = 1
-
-
+STEPS = 1.5
 
 class Conection():
     def __init__(self):
@@ -17,9 +15,8 @@ class Conection():
         self.threadConection.start()
         
         self.state = False
+        self.myPos = [0,0]
         
-
-
     def update(self):
         pass
         
@@ -28,8 +25,9 @@ class Conection():
             conexion, addr = self.sock.accept()
             print('Nueva conexion {}'.format(addr))
             self.state = True
+            while (True):
+                conexion.send('{} {}'.format(self.myPos[0],self.myPos[1]).encode())
             
-
 class Cube():
     def __init__(self,x,y):
         self.pos = [x,y]
@@ -41,21 +39,26 @@ class Game():
     def __init__(self):
         pyxel.init(180,120)
         self.player = Cube(pyxel.width/2,pyxel.height/2)
-        self.players = []
         self.server = Conection()
+        self.online = False
         pyxel.run(self.update,self.draw)
         
     def update(self):
         self.keyboardUpdate()
         if (self.server.state == True):
-            self.createUser()
+            self.online = True
             self.server.state = False
+            self.otherPlayer = Cube(pyxel.width/2,pyxel.height/2)
+            
+        if (self.online):
+            self.server.myPos[0] = self.player.pos[0]
+            self.server.myPos[1] = self.player.pos[1]
         
     def draw(self):
         pyxel.cls(pyxel.COLOR_LIME)
         self.player.draw()
-        for player in self.players:
-            player.draw()
+        if (self.server.state):
+            self.otherPlayer.draw()
         
     def keyboardUpdate(self):
         if (pyxel.btn(pyxel.KEY_A)): self.player.pos[0] -= STEPS
@@ -63,6 +66,4 @@ class Game():
         if (pyxel.btn(pyxel.KEY_D)): self.player.pos[0] += STEPS
         if (pyxel.btn(pyxel.KEY_S)): self.player.pos[1] += STEPS
 
-    def createUser(self):
-        self.players.append(Cube(pyxel.width/2,pyxel.height/2))
 Game()

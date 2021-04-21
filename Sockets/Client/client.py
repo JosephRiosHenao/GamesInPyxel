@@ -1,17 +1,25 @@
 import pyxel
 import random
 import socket
+import threading
 
 STEPS = 1
 
 class Conection():
     def __init__(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.threadConection = threading.Thread(target=self.connect)
+        self.threadConection.start()
+        self.
+        
+    def connect(self):
         self.sock.connect(('localhost', 8000))
         print('Conectando...')
-        
-    def update(self):
-        pass
+        while (True):
+            response = self.sock.recv(1024).decode()
+            response = response.split(' ')
+            
+            if (pyxel.btnp(pyxel.KEY_SPACE)): print(response)
 
 class Cube():
     def __init__(self,x,y,r):
@@ -31,7 +39,6 @@ class Game():
         
     def update(self):
         self.keyboardUpdate()
-        self.client.update()
         
     def draw(self):
         pyxel.cls(pyxel.COLOR_LIME)
