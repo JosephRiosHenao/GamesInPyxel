@@ -31,6 +31,7 @@ class Game():
         if (self.state == 1):
             self.mouse.setColDefault(14)
             self.player.update(self.mouse.stateShoot)
+            # print(self.mouse.stateShoot)
     
     def draw(self):
         pyxel.cls(0)

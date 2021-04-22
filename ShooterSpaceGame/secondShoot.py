@@ -43,7 +43,7 @@ class Shoot():
         
         
 
-        if (self.t<0.5):
+        if (self.t<1):
             self.x = self.xi + self.vX * self.t # multiplica la constante por el timepo para saber la poscicion
             self.y = self.yi + self.viY*self.t
         else:
@@ -58,7 +58,7 @@ class Shoot():
                 
         
     def draw(self):
-        if (self.t<0.5):
+        if (self.t<1):
             pyxel.circ(self.x,self.y,self.r,self.col) # Dibujando
         else:
             for shoot in self.miniShoots:

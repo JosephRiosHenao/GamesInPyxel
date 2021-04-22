@@ -41,7 +41,7 @@ class Shoot():
         if (self.x > pyxel.width or self.x < 0): self.destroy = True
         if (self.y > pyxel.height or self.y < 0): self.destroy = True
         
-        if (self.t<1):
+        if (self.t<2):
             self.x = self.xi + self.vX * self.t # multiplica la constante por el timepo para saber la poscicion
             self.y = self.yi + self.viY*self.t
         else:
@@ -55,7 +55,7 @@ class Shoot():
             if (self.numShoot == len(self.miniShoots)): self.destroy = True
                 
     def draw(self):
-        if (self.t<1):
+        if (self.t<2):
             pyxel.circ(self.x,self.y,self.r,self.col) # Dibujando   
         else:
             for shoot in self.miniShoots:
@@ -66,5 +66,5 @@ class Shoot():
     def generateExplosion(self):
         for ex in range(self.explosion):
             self.angle += self.angleShoot 
-            self.miniShoots.append( secondShoot.Shoot(self.x,self.y,1.5,14,self.angle,50,25))
+            self.miniShoots.append( secondShoot.Shoot(self.x,self.y,1.5,14,self.angle,50,5))
         

@@ -29,13 +29,13 @@ class Player():
         self.angleController = Pitagoras(self.pos[0], self.pos[1])
         
     def update(self, stateShoot):
-        self.stateShoot = stateShoot
         self.resetFormPosition()
         self.angleController.update(self.pos[0], self.pos[1])
         self.angle = self.angleController.angle
         self.updateHeadPos()
-        self.keyDownScan()
         self.points = rotateEngine.update_points(self.points,self.points[2],self.pos,math.radians(self.angle))
+        self.keyDownScan()
+        self.stateShoot = stateShoot
         
         for shoot in self.shoots:
             shoot.update()
@@ -65,11 +65,11 @@ class Player():
             self.velocity[1] +=VELOCITY
         if (pyxel.btn(pyxel.KEY_D)):
             self.velocity[0] +=VELOCITY
-        if (pyxel.btnp(pyxel.MOUSE_LEFT_BUTTON) and self.stateShoot):
+        if (pyxel.btnp(pyxel.MOUSE_LEFT_BUTTON)):
             self.shoot(1)
-        if (pyxel.btnp(pyxel.MOUSE_RIGHT_BUTTON) and self.stateShoot):
+        if (pyxel.btnp(pyxel.MOUSE_RIGHT_BUTTON)):
             self.shoot(2)
-        if (pyxel.btnp(pyxel.KEY_SPACE) and self.stateShoot):
+        if (pyxel.btnp(pyxel.KEY_SPACE)):
             self.shoot(3)
         if (pyxel.btnp(pyxel.KEY_Q)):
             print(self.shoots)
@@ -107,10 +107,10 @@ class Player():
             [self.pos[0]-self.size[0]/2,self.pos[1]+self.size[1]], #IZQUIERDA
         ]
     def shoot(self,type):
-        if (type==1): self.shoots.append( primaryShoot.Shoot(self.pos[0],self.pos[1],0.5,15,self.angle,100 ))
-        if (type==2): self.shoots.append( secondShoot.Shoot(self.pos[0],self.pos[1],2,14,self.angle,50,15))
-        if (type==3): self.shoots.append( thirdShoot.Shoot(self.pos[0],self.pos[1],2,14,self.angle,50,4))
-        if (type==4): self.shoots.append( thirdShoot.Shoot(self.pos[0],self.pos[1],2,14,self.angle,50,8))
+        if (type==1 and self.stateShoot): self.shoots.append( primaryShoot.Shoot(self.points[0][0],self.points[0][1],0.5,15,self.angle,100 ))
+        if (type==2 and self.stateShoot): self.shoots.append( secondShoot.Shoot(self.points[0][0],self.points[0][1],2,14,self.angle,50,10))
+        if (type==3 and self.stateShoot): self.shoots.append( thirdShoot.Shoot(self.points[0][0],self.points[0][1],2,14,self.angle,50,4))
+        if (type==4): self.shoots.append( thirdShoot.Shoot(self.points[0][0],self.points[0][1],2,14,self.angle,50,8))
         self.defineIndex()
 
     def defineIndex(self):
