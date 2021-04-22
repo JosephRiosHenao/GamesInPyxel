@@ -1,7 +1,7 @@
-import keyboardInput
 import player 
 import mouseObject
 import pyxel
+import menu
 
 class Game():
     def __init__(self,w,h):
@@ -13,22 +13,28 @@ class Game():
         )
         self.player = player.Player(5,3,(pyxel.width/2),(pyxel.height/2),1)
         self.mouse = mouseObject.Mouse(3,15)
-        self.keyboard = keyboardInput.KeyboardInput()
+        self.menu = menu.Menu()
+        self.state = 0
+        
+        # 0 = MENU
+        # 1 = GAME
         
         pyxel.run(self.update,self.draw)
         
     def update(self):
-        
-        
-        self.player.update()
         self.mouse.update()
-        self.keyboard.update()
+        if (self.state == 0):
+            self.menu.update()
+        if (self.state == 1):
+            self.player.update()
     
     def draw(self):
         pyxel.cls(0)
-        self.player.draw()
+        if (self.state == 0):
+            self.menu.draw()
+        if (self.state == 1):
+            self.player.draw()
         self.mouse.draw()
-        pyxel.text((pyxel.width/2)-((pyxel.FONT_WIDTH*len(self.keyboard.storage))/2),20,self.keyboard.storage,1)
         
 if __name__ == '__main__':
     Game(192,128)
