@@ -6,8 +6,9 @@ import math
 ROTATE = 5
 
 class Mouse():
-    def __init__(self,margin,col):
+    def __init__(self,margin,col,colShoot):
         self.col = col
+        self.colShoot = colShoot
         self.colOriginal = col
         self.margin = margin
         self.timeReference = time.time()
@@ -29,8 +30,10 @@ class Mouse():
         
         timeActually = time.time()-self.timeReference
         
-        if (self.col < self.colOriginal and timeActually>0.1): 
+        if (self.stateShoot):
             self.col = self.colOriginal
+        else:
+            self.col = self.colShoot
             
         if (pyxel.btnp(pyxel.MOUSE_LEFT_BUTTON)): 
             self.col = 13
@@ -75,4 +78,6 @@ class Mouse():
         if (self.necesaryGrades == self.actuallyGrades): self.stateTurn = False
         self.pixels = rotateEngine.update_points(self.pixels,self.pos,self.pos,math.radians(self.actuallyGrades))
             
+    def setColDefault(self,col):
+        self.colOriginal = col
             

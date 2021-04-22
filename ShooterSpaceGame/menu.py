@@ -4,15 +4,19 @@ import buttons
 class Menu():
     def __init__(self):
         self.buttons = [
-            [ buttons.Button([pyxel.width,10 ],[20,10],[1,2,3],['HOLA 1',1] )], # LOCAL
-            [ buttons.Button([pyxel.width,100],[20,10],[1,2,3],['HOLA 2',1] )], # SERVER
-            [ buttons.Button([pyxel.width,150],[20,10],[1,2,3],['HOLA 3',1] )], # CLIENT
+            buttons.Button([pyxel.width/2,80 ],[100,10],[1,2,3],['ENTRENAMIENTO LOCAL',pyxel.COLOR_WHITE] ), # LOCAL
+            buttons.Button([pyxel.width/2-pyxel.width/4,100 ],[70,10],[1,2,3],['CREAR SERVIDOR',pyxel.COLOR_WHITE] ), # CLIENT
+            buttons.Button([pyxel.width/2+pyxel.width/4,100],[80,10],[1,2,3],['UNIRSE A SERVIDOR',pyxel.COLOR_WHITE] ), # SERVER
         ]
         
     def update(self):
-        pass
+        for button in self.buttons:
+            button.update()
         
     def draw(self):
-        for target in self.buttons:
-            target.draw()
+        pyxel.cls(pyxel.COLOR_PEACH)
+        pyxel.text(((pyxel.width/2)-((len('ASTEROID ONLINE LAN')*pyxel.FONT_WIDTH)/2)),25,'ASTEROID ONLINE LAN',1)
+        pyxel.text(((pyxel.width/2)-((len('POR JOSEPH RIOS H')*pyxel.FONT_WIDTH)/2)),32,'POR JOSEPH RIOS H',1)
+        for button in self.buttons:
+            button.draw()
             
