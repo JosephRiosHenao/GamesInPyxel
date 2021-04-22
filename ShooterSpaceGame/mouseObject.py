@@ -3,7 +3,7 @@ import time
 import rotateEngine
 import math
 
-ROTATE = 10
+ROTATE = 5
 
 class Mouse():
     def __init__(self,margin,col):
@@ -39,7 +39,7 @@ class Mouse():
             
         if (pyxel.btnp(pyxel.MOUSE_RIGHT_BUTTON)):
             self.col = 13
-            self.setTurn(-90)
+            self.setTurn(-180)
             self.timeReference = time.time()
 
             self.timeReference = time.time()            

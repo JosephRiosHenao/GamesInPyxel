@@ -22,11 +22,12 @@ class Game():
         pyxel.run(self.update,self.draw)
         
     def update(self):
+        
         self.mouse.update()
         if (self.state == 0):
             self.menu.update()
         if (self.state == 1):
-            self.player.update()
+            self.player.update(self.mouse.stateShoot)
     
     def draw(self):
         pyxel.cls(0)
