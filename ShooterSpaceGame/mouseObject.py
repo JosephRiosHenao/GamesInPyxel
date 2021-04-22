@@ -1,5 +1,4 @@
 import pyxel
-import time
 import rotateEngine
 import math
 
@@ -11,7 +10,6 @@ class Mouse():
         self.colShoot = colShoot
         self.colOriginal = col
         self.margin = margin
-        self.timeReference = time.time()
         self.pos = [0,0]
         self.stateTurn = False
         self.stateShoot = True
@@ -26,10 +24,13 @@ class Mouse():
             [self.pos[0] - self.margin,self.pos[1] ], # LEFT
             [self.pos[0] , self.pos[1] +self.margin], # DOWN
             [self.pos[0] , self.pos[1] -self.margin], # UP
+            
+            [self.pos[0] + self.margin*2,self.pos[1] ], # RIGHT
+            [self.pos[0] - self.margin*2,self.pos[1] ], # LEFT
+            [self.pos[0] , self.pos[1] +self.margin*2], # DOWN
+            [self.pos[0] , self.pos[1] -self.margin*2], # UP
         ]
-        
-        timeActually = time.time()-self.timeReference
-        
+                
         if (self.stateShoot):
             self.col = self.colOriginal
         else:
@@ -38,14 +39,11 @@ class Mouse():
         if (pyxel.btnp(pyxel.MOUSE_LEFT_BUTTON)): 
             self.col = 13
             self.setTurn(90)
-            self.timeReference = time.time()
             
         if (pyxel.btnp(pyxel.MOUSE_RIGHT_BUTTON)):
             self.col = 13
             self.setTurn(-180)
-            self.timeReference = time.time()
 
-            self.timeReference = time.time()            
         if (pyxel.btnp(pyxel.KEY_SPACE)): 
             self.setTurn(360)
             

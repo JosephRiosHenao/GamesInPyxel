@@ -12,7 +12,7 @@ class Game():
             fps=60
         )
         self.player = player.Player(5,3,(pyxel.width/2),(pyxel.height/2),1)
-        self.mouse = mouseObject.Mouse(3,14,1)
+        self.mouse = mouseObject.Mouse(3,0,1)
         self.menu = menu.Menu()
         self.state = 0
         
@@ -25,7 +25,8 @@ class Game():
         
         self.mouse.update()
         if (self.state == 0):
-            self.mouse.setColDefault(8)
+            self.mouse.setColDefault(1)
+            self.state = self.menu.state
             self.menu.update()
         if (self.state == 1):
             self.mouse.setColDefault(14)
