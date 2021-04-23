@@ -12,12 +12,13 @@ REDUCE_VELOCITY = 0.01
 MAX_VELOCITY = 1
 
 class Player():
-    def __init__(self,w,h,x,y,col):
+    def __init__(self,w,h,x,y,col,otherPlayer = False):
         self.size = [w,h]
         self.pos = [x,y]
         self.col = col
         self.angle = 0
         self.velocity = [0,0]
+        self.otherPlayer = not otherPlayer
         self.stateShoot = True
         self.points = [
             [self.pos[0],self.pos[1]-self.size[1]], #SUPERIOR
@@ -26,16 +27,19 @@ class Player():
             [self.pos[0]-self.size[0]/2,self.pos[1]+self.size[1]], #IZQUIERDA
         ]
         self.shoots = []
-        self.angleController = Pitagoras(self.pos[0], self.pos[1])
+        if (self.otherPlayer):  self.angleController = Pitagoras(self.pos[0], self.pos[1])
         
-    def update(self, stateShoot):
+    def update(self, stateShoot = True):
         self.resetFormPosition()
-        self.angleController.update(self.pos[0], self.pos[1])
-        self.angle = self.angleController.angle
+        
+        if (self.otherPlayer): 
+            self.angleController.update(self.pos[0], self.pos[1])
+            self.angle = self.angleController.angle
         self.updateHeadPos()
         self.points = rotateEngine.update_points(self.points,self.points[2],self.pos,math.radians(self.angle))
-        self.keyDownScan()
-        self.stateShoot = stateShoot
+        if (self.otherPlayer): 
+            self.keyDownScan()
+            self.stateShoot = stateShoot
         
         for shoot in self.shoots:
             shoot.update()
@@ -54,7 +58,7 @@ class Player():
         for shoot in self.shoots:
             shoot.draw()
         # pyxel.trib(self.points[0][0],self.points[0][1],self.points[1][0],self.points[1][1],self.points[3][0],self.points[3][1],self.col)
-        self.angleController.draw()
+        if (self.otherPlayer): self.angleController.draw()
         
     def keyDownScan(self):
         if (pyxel.btn(pyxel.KEY_W)):

@@ -27,7 +27,7 @@ class Game():
         if (self.state == 0):
             self.mouse.setColDefault(1)
             self.state = self.menu.state
-            self.menu.update()
+            self.menu.update(self.mouse.stateShoot)
         if (self.state == 1):
             self.mouse.setColDefault(14)
             self.player.update(self.mouse.stateShoot)

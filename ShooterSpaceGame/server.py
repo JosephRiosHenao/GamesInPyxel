@@ -10,21 +10,24 @@ class Conection():
         
         self.disconect = False
         self.port = str(self.sock.getsockname()[1])
+        self.online = False
         
         self.threadConection = threading.Thread(target=self.newConexion)
         self.threadConection.start()
         
-        self.myPos = [0,0]
-        self.otherPos = [0,0]
+        self.myPos = [0,0,0]
+        self.otherPos = [0,0,0]
+        
         
     def newConexion(self):
         print('Escuchando...')
         while (self.disconect == False):
             conexion, addr = self.sock.accept()
             print('Nueva conexion {}'.format(addr))
+            self.online = True
             while (self.disconect == False):
                 #ENVIAR DATOS
-                conexion.send("{}-{}-".format(self.myPos[0],self.myPos[1]).encode())
+                conexion.send("{}-{}-{}-".format(self.myPos[0],self.myPos[1],self.myPos[2]).encode())
                 
                 # RECIBIR DATOS
                 response = conexion.recv(1024).decode()
@@ -32,10 +35,12 @@ class Conection():
                 try:
                     self.otherPos[0] = float(response[0])
                     self.otherPos[1] = float(response[1])
+                    self.otherPos[2] = float(response[2])
                 except: 
                     try:
                         self.otherPos[0] = float(response[1])
                         self.otherPos[1] = float(response[2])
+                        self.otherPos[2] = float(response[3])
                     except: 
                         print(response)        
                 if (self.disconect):
