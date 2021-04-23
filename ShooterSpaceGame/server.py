@@ -4,8 +4,12 @@ import threading
 class Conection():
     def __init__(self):
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.sock.bind(('localhost', 8000))
+        self.ip = socket.gethostbyname(socket.gethostname())
+        self.sock.bind((str(self.ip), 8000))
         self.sock.listen(1)
+        
+        self.disconect = False
+        self.port = str(self.sock.getsockname()[1])
         
         self.threadConection = threading.Thread(target=self.newConexion)
         self.threadConection.start()
@@ -15,10 +19,10 @@ class Conection():
         
     def newConexion(self):
         print('Escuchando...')
-        while (True):
+        while (self.disconect == False):
             conexion, addr = self.sock.accept()
             print('Nueva conexion {}'.format(addr))
-            while (True):
+            while (self.disconect == False):
                 #ENVIAR DATOS
                 conexion.send("{}-{}-".format(self.myPos[0],self.myPos[1]).encode())
                 
@@ -33,4 +37,10 @@ class Conection():
                         self.otherPos[0] = float(response[1])
                         self.otherPos[1] = float(response[2])
                     except: 
-                        print(response)
+                        print(response)        
+                if (self.disconect):
+                    conexion.close()
+        print('Desconectado')
+    
+    def closeConection(self):
+        self.disconect = True

@@ -126,3 +126,4 @@ class Player():
         for shoot in self.shoots:
             if (shoot.destroy==True): self.removeShoot(shoot.index)
             elif (shoot.destroy==True): self.removeShoot(shoot.index)
+                    
