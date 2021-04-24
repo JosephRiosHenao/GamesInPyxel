@@ -9,7 +9,8 @@ class Game():
             width=w,
             height=h,
             caption='ShooterGame',
-            fps=60
+            fps=60,
+            scale=3
         )
         self.player = player.Player(5,3,(pyxel.width/2),(pyxel.height/2),1)
         self.mouse = mouseObject.Mouse(3,0,1)
