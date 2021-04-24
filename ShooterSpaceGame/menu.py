@@ -50,10 +50,14 @@ class Menu():
             self.multiplayer.my["pos"][0] = self.player.pos[0]
             self.multiplayer.my["pos"][1] = self.player.pos[1]
             self.multiplayer.my["angle"]  = self.player.angle
+            self.multiplayer.my["shoot"]  = self.player.typeShoot
+            self.player.typeShoot = 0
             
             self.otherPlayer.pos[0] = self.multiplayer.other["pos"][0]
             self.otherPlayer.pos[1] = self.multiplayer.other["pos"][1]
             self.otherPlayer.angle  = self.multiplayer.other["angle"]
+            if (self.multiplayer.other["shoot"] != 0): self.otherPlayer.shoot(self.multiplayer.other["shoot"])
+            self.multiplayer.other["shoot"] = 0
             
         else:
             

@@ -27,6 +27,7 @@ class Player():
             [self.pos[0]-self.size[0]/2,self.pos[1]+self.size[1]], #IZQUIERDA
         ]
         self.shoots = []
+        self.typeShoot = 0
         if (self.otherPlayer):  self.angleController = Pitagoras(self.pos[0], self.pos[1])
         
     def update(self, stateShoot = True):
@@ -111,10 +112,11 @@ class Player():
             [self.pos[0]-self.size[0]/2,self.pos[1]+self.size[1]], #IZQUIERDA
         ]
     def shoot(self,type):
-        if (type==1 and self.stateShoot): self.shoots.append( primaryShoot.Shoot(self.points[0][0],self.points[0][1],0.5,15,self.angle,100 ))
-        if (type==2 and self.stateShoot): self.shoots.append( secondShoot.Shoot(self.points[0][0],self.points[0][1],2,14,self.angle,50,10))
-        if (type==3 and self.stateShoot): self.shoots.append( thirdShoot.Shoot(self.points[0][0],self.points[0][1],2,14,self.angle,50,4))
-        if (type==4): self.shoots.append( thirdShoot.Shoot(self.points[0][0],self.points[0][1],2,14,self.angle,50,8))
+        if (self.stateShoot):
+            self.typeShoot = type
+            if (type==1): self.shoots.append( primaryShoot.Shoot(self.points[0][0],self.points[0][1],0.5,15,self.angle,100 ))
+            if (type==2): self.shoots.append( secondShoot.Shoot(self.points[0][0],self.points[0][1],2,14,self.angle,50,10))
+            if (type==3): self.shoots.append( thirdShoot.Shoot(self.points[0][0],self.points[0][1],2,14,self.angle,50,4))
         self.defineIndex()
 
     def defineIndex(self):

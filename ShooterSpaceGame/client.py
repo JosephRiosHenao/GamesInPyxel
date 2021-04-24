@@ -16,10 +16,12 @@ class Conection():
         self.my = {
             "pos" : [0,0],
             "angle" : 0,
+            "shoot" : 0,
         }
         self.other = {
             "pos" : [0,0],
             "angle" : 0,
+            "shoot" : 0,
         }
         
     def connect(self):
