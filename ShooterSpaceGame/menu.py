@@ -47,13 +47,13 @@ class Menu():
             self.player.update(reload)
             self.otherPlayer.update()
             
-            self.multiplayer.myPos[0] = self.player.pos[0]
-            self.multiplayer.myPos[1] = self.player.pos[1]
-            self.multiplayer.myPos[2] = self.player.angle
+            self.multiplayer.my["pos"][0] = self.player.pos[0]
+            self.multiplayer.my["pos"][1] = self.player.pos[1]
+            self.multiplayer.my["angle"]  = self.player.angle
             
-            self.otherPlayer.pos[0] = self.multiplayer.otherPos[0]
-            self.otherPlayer.pos[1] = self.multiplayer.otherPos[1]
-            self.otherPlayer.angle = self.multiplayer.otherPos[2]
+            self.otherPlayer.pos[0] = self.multiplayer.other["pos"][0]
+            self.otherPlayer.pos[1] = self.multiplayer.other["pos"][1]
+            self.otherPlayer.angle  = self.multiplayer.other["angle"]
             
         else:
             

@@ -1,5 +1,6 @@
 import socket
 import threading
+import json
 
 class Conection():
     def __init__(self):
@@ -15,9 +16,14 @@ class Conection():
         self.threadConection = threading.Thread(target=self.newConexion)
         self.threadConection.start()
         
-        self.myPos = [0,0,0]
-        self.otherPos = [0,0,0]
-        
+        self.my = {
+            "pos" : [0,0],
+            "angle" : 0,
+        }
+        self.other = {
+            "pos" : [0,0],
+            "angle" : 0,
+        }
         
     def newConexion(self):
         print('Escuchando...')
@@ -27,22 +33,10 @@ class Conection():
             self.online = True
             while (self.disconect == False):
                 #ENVIAR DATOS
-                conexion.send("{}-{}-{}-".format(self.myPos[0],self.myPos[1],self.myPos[2]).encode())
-                
+                conexion.send(json.dumps(self.my).encode())
                 # RECIBIR DATOS
                 response = conexion.recv(1024).decode()
-                response = response.split('-')
-                try:
-                    self.otherPos[0] = float(response[0])
-                    self.otherPos[1] = float(response[1])
-                    self.otherPos[2] = float(response[2])
-                except: 
-                    try:
-                        self.otherPos[0] = float(response[1])
-                        self.otherPos[1] = float(response[2])
-                        self.otherPos[2] = float(response[3])
-                    except: 
-                        print(response)        
+                self.other = json.loads(response)     
                 if (self.disconect):
                     conexion.close()
         print('Desconectado')
