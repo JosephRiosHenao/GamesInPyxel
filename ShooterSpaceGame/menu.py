@@ -18,14 +18,14 @@ class Menu():
         self.returnButton = buttons.Button([25,10 ],[50,10],[7,0,0],['VOLVER',13])
         
         self.connectButton = buttons.Button([pyxel.width/2,110],[80,10],[3,1,1],['UNIRSE A SERVIDOR',11] )
-        self.hostButton = buttons.Button([pyxel.width/2,110],[80,10],[3,1,1],['CREAR SERVIDOR',11] )
+        self.hostButton = buttons.Button([pyxel.width/2,110],[80,10],[9,1,1],['CREAR SERVIDOR',10] )
         
         self.addrInput = KeyboardInput('192.168.')
         self.addrBox = buttons.Button([pyxel.width/2,65],[100,10],[7,0,0],[self.addrInput.storage,3] )
         self.portInput = KeyboardInput('8000')
         self.portBox = buttons.Button([pyxel.width/2,95],[100,10],[7,0,0],[self.portInput.storage,3] )
-        self.nameInput = KeyboardInput('PLAYER')
-        self.nameBox = buttons.Button([pyxel.width/2,35],[100,10],[7,0,0],[self.portInput.storage,3] )
+        self.nameInput = KeyboardInput('player')
+        self.nameBox = buttons.Button([pyxel.width/2,35],[100,10],[7,0,0],[self.nameInput.storage,3] )
         self.player = player.Player(5,3,(pyxel.width/2),(pyxel.height/2),1)
         self.otherPlayer = player.Player(5,3,(pyxel.width/2),(pyxel.height/2),1,True)
         
@@ -81,8 +81,7 @@ class Menu():
                 self.addrBox.active = False
                 self.portBox.active = False
                 self.returnButton.active = True
-                self.hostButton.active = True
-                
+                                
                 if (self.hostButton.isColliding() and pyxel.btnp(pyxel.MOUSE_LEFT_BUTTON)): self.hostConect()
                     
                 if (self.nameBox.isColliding() and pyxel.btnp(pyxel.MOUSE_LEFT_BUTTON)): self.nameInput.active = True
@@ -90,9 +89,9 @@ class Menu():
                                 
                 if (self.nameInput.active == True):
                     self.nameInput.update()
-                    self.nameBox.text[1] = 11
+                    self.nameBox.text[1] = 9
                     self.nameBox.text[0] = self.nameInput.storage
-                else: self.nameBox.text[1] = 3
+                else: self.nameBox.text[1] = 10
                 
             if (self.internalState == 2):
                 self.returnButton.active = True
@@ -145,27 +144,27 @@ class Menu():
             else:
                 if (self.internalState == 1):
                     pyxel.cls(10)
-                    pyxel.text((pyxel.width/2)-((pyxel.FONT_WIDTH/2)*len("Nombre")),20,"Nombre", 9)
-                    pyxel.text((pyxel.width/2)-((pyxel.FONT_WIDTH/2)*len("Direccion IP LAN")),50,"Direccion IP LAN", 9)
-                    pyxel.text((pyxel.width/2)-((pyxel.FONT_WIDTH/2)*len("Puerto actual")),80,"Puerto actual", 9)
+                    pyxel.text((pyxel.width/2)-((pyxel.FONT_WIDTH/2)*len("NICKNAME")),20,"NICKNAME", 9)
+                    pyxel.text((pyxel.width/2)-((pyxel.FONT_WIDTH/2)*len("DIRECCION IP")),50,"DIRECCION IP", 9)
+                    pyxel.text((pyxel.width/2)-((pyxel.FONT_WIDTH/2)*len("PUERTO")),80,"PUERTO", 9)
                     self.nameBox.draw()
                     self.hostButton.draw()
                     try:
-                        pyxel.text((pyxel.width/2)-((pyxel.FONT_WIDTH/2)*len(self.multiplayer.ip)),65,self.multiplayer.ip, 9)
+                        pyxel.text((pyxel.width/2)-((pyxel.FONT_WIDTH/2)*len(self.multiplayer.ip)),60,self.multiplayer.ip, 9)
                     except:
-                        pyxel.text((pyxel.width/2)-((pyxel.FONT_WIDTH/2)*len("crea el servidor primero")),65,"crea el servidor primero", 9)
+                        pyxel.text((pyxel.width/2)-((pyxel.FONT_WIDTH/2)*len("crea el servidor primero")),60,"crea el servidor primero", 9)
                         
                     try:
-                        pyxel.text((pyxel.width/2)-((pyxel.FONT_WIDTH/2)*len(self.multiplayer.port)),95,self.multiplayer.port, 9)
+                        pyxel.text((pyxel.width/2)-((pyxel.FONT_WIDTH/2)*len(self.multiplayer.port)),90,self.multiplayer.port, 9)
                     except: 
-                        pyxel.text((pyxel.width/2)-((pyxel.FONT_WIDTH/2)*len("crea el servidor primero")),95,"crea el servidor primero", 9)
+                        pyxel.text((pyxel.width/2)-((pyxel.FONT_WIDTH/2)*len("crea el servidor primero")),90,"crea el servidor primero", 9)
                         
                     
                 if (self.internalState == 2):
                     pyxel.cls(11)
-                    pyxel.text((pyxel.width/2)-((pyxel.FONT_WIDTH/2)*len("Nombre")),20,"Nombre", 3)
-                    pyxel.text((pyxel.width/2)-((pyxel.FONT_WIDTH/2)*len("Direccion IP LAN")),50,"Direccion IP LAN", 3)
-                    pyxel.text((pyxel.width/2)-((pyxel.FONT_WIDTH/2)*len("Puerto")),80,"Puerto", 3)
+                    pyxel.text((pyxel.width/2)-((pyxel.FONT_WIDTH/2)*len("NICKNAME")),20,"NICKNAME", 3)
+                    pyxel.text((pyxel.width/2)-((pyxel.FONT_WIDTH/2)*len("DIRECCION IP")),50,"DIRECCION IP", 3)
+                    pyxel.text((pyxel.width/2)-((pyxel.FONT_WIDTH/2)*len("PUERTO")),80,"PUERTO", 3)
                     self.nameBox.draw()
                     self.addrBox.draw()
                     self.portBox.draw()
@@ -175,7 +174,9 @@ class Menu():
             
     def actionButtonMenu(self,index):
         if (index == 0): self.state = 1
-        if (index == 1): self.internalState = 1
+        if (index == 1): 
+            self.internalState = 1
+            self.hostButton.active = True
         if (index == 2): self.internalState = 2
             
     def clientConect(self):
@@ -183,3 +184,5 @@ class Menu():
         
     def hostConect(self):
         self.multiplayer = server.Conection()
+        self.hostButton.active = False
+
