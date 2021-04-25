@@ -20,6 +20,7 @@ class Pitagoras(): # CLASE PARA DETERMINAR POSICION RESPECTO A 2 VECTORES, SIEND
         self.stateUP   = False # Visibilidad de la hipotenusa 
         self.stateDOWN = False # Visibilidad de la opuesta
         self.stateLEFT = False # Visibilidad de la adyacente
+        self.Angulo = 0
     #-----------------------------------------------------------------------------------------------------------------------------
     def update(self,Ax,Ay): # METODO UPDATE PARA DETERMINAR VALORES DEL TRIANGULO
         # POSICION DEL VECTOR 1

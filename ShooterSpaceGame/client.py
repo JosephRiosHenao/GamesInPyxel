@@ -14,14 +14,18 @@ class Conection():
         self.threadConection.start()
         
         self.my = {
+            "name" : "player",
             "pos" : [0,0],
             "angle" : 0,
             "shoot" : 0,
+            "heal" : 100
         }
         self.other = {
+            "name" : "player",
             "pos" : [0,0],
             "angle" : 0,
             "shoot" : 0,
+            "heal" : 100
         }
         
     def connect(self):

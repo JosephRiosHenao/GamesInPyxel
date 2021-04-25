@@ -10,6 +10,7 @@ class Menu():
         self.state = 0
         self.internalState = 0
         self.online = False
+        self.initOnline = False
         self.buttons = [
             buttons.Button([pyxel.width/2,80 ],[100,10],[12,5,1],['ENTRENAMIENTO LOCAL',6] ), # LOCAL
             buttons.Button([pyxel.width/2-pyxel.width/4,100 ],[70,10],[12,5,1],['CREAR SERVIDOR',6] ), # CLIENT
@@ -48,6 +49,10 @@ class Menu():
 
                 
         if (self.online):
+            if (self.initOnline == False):
+                self.initOnlineMethod()
+                self.initOnline == True
+                        
             self.player.update(reload)
             self.otherPlayer.update()
             
@@ -185,4 +190,9 @@ class Menu():
     def hostConect(self):
         self.multiplayer = server.Conection()
         self.hostButton.active = False
+        
+    def initOnlineMethod(self):
+        self.otherPlayer.name = self.multiplayer.other["name"]
+        self.multiplayer.my["name"] = self.nameInput.storage
+        self.player.name = self.nameInput.storage
 
