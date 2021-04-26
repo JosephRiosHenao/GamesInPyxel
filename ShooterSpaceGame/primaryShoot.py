@@ -39,3 +39,9 @@ class Shoot():
     def draw(self):
         pyxel.circ(self.x,self.y,self.r,self.col) # Dibujando
         # pyxel.line(self.x,self.y,self.x+self.r,self.y+self.r,self.col)
+        
+    # def IsCollidingPlayer(self, other):
+    #     return self.x < other.x + other.w and \
+    #         self.x + self.w > other.x and \
+    #         self.y < other.y + other.h and \
+    #         self.y + self.h > other.y
