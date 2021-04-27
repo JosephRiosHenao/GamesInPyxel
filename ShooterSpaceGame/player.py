@@ -2,6 +2,7 @@ import math
 import primaryShoot
 import secondShoot
 import thirdShoot
+import circleColisionObject
 from angleMouse import Pitagoras
 import pyxel
 import rotateEngine
@@ -20,6 +21,7 @@ class Player():
         self.velocity = [0,0]
         self.otherPlayer = not otherPlayer
         self.stateShoot = True
+        self.collisionObject = circleColisionObject.Circle([0,0],1)
         self.points = [
             [self.pos[0],self.pos[1]-self.size[1]], #SUPERIOR
             [self.pos[0]+self.size[0]/2,self.pos[1]+self.size[1]], #DERECHA
@@ -47,8 +49,14 @@ class Player():
             shoot.update()
         self.calculateShoot()
         
+        self.collisionObject.pos[0] = self.pos[0]
+        self.collisionObject.pos[1] = self.pos[1]
+        
         
     def draw(self):
+        
+        self.collisionObject.draw()
+        
         for pixel in self.points:
             pyxel.pset(pixel[0],pixel[1],11)
         for i in range(1,len(self.points)):

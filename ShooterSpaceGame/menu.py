@@ -68,7 +68,9 @@ class Menu():
             if (self.multiplayer.other["shoot"] != 0): self.otherPlayer.shoot(self.multiplayer.other["shoot"])
             
             for shoot in self.otherPlayer.shoots:
-                shoot.isC
+                shoot.isCollision(self.player.collisionObject.pos,self.player.collisionObject.r)
+            for shoot in self.player.shoots:
+                shoot.isCollision(self.otherPlayer.collisionObject.pos,self.otherPlayer.collisionObject.r)
             # self.multiplayer.other["shoot"] = 0
             
         else:

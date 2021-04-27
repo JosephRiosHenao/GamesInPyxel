@@ -40,8 +40,9 @@ class Shoot():
         pyxel.circ(self.x,self.y,self.r,self.col) # Dibujando
         # pyxel.line(self.x,self.y,self.x+self.r,self.y+self.r,self.col)
         
-    # def IsCollidingPlayer(self, other):
-    #     return self.x < other.x + other.w and \
-    #         self.x + self.w > other.x and \
-    #         self.y < other.y + other.h and \
-    #         self.y + self.h > other.y
+    def isCollision(self, playerCollisionPos, collisionR):
+        distancia = math.sqrt( (playerCollisionPos[0] - self.x)*(playerCollisionPos[0] - self.x) + (playerCollisionPos[1] - self.y)*(playerCollisionPos[1] - self.y) );
+        if ( distancia < collisionR + self.r ):
+            self.destroy = True
+        else:
+            if (not self.destroy): self.destroy = False

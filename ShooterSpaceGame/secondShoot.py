@@ -69,4 +69,10 @@ class Shoot():
         for ex in range(self.explosion):
             self.angle += self.angleShoot 
             self.miniShoots.append( primaryShoot.Shoot(self.x,self.y,0.5,self.col,self.angle,100))
-        
+            
+    def isCollision(self, playerCollisionPos, collisionR):
+        distancia = math.sqrt( (playerCollisionPos[0] - self.x)*(playerCollisionPos[0] - self.x) + (playerCollisionPos[1] - self.y)*(playerCollisionPos[1] - self.y) );
+        if ( distancia < collisionR + self.r ):
+            self.destroy = True
+        else:
+            if (not self.destroy): self.destroy = False
