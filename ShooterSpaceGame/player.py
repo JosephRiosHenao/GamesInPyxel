@@ -22,6 +22,7 @@ class Player():
         self.otherPlayer = not otherPlayer
         self.stateShoot = True
         self.collisionObject = circleColisionObject.Circle([0,0],1)
+        self.heal = 100
         self.points = [
             [self.pos[0],self.pos[1]-self.size[1]], #SUPERIOR
             [self.pos[0]+self.size[0]/2,self.pos[1]+self.size[1]], #DERECHA
@@ -54,22 +55,23 @@ class Player():
         
         
     def draw(self):
-        
-        self.collisionObject.draw()
-        
-        for pixel in self.points:
-            pyxel.pset(pixel[0],pixel[1],11)
-        for i in range(1,len(self.points)):
-            point = self.points[i-1]
-            nextPoint = self.points[i]
-            pyxel.line(point[0],point[1],nextPoint[0],nextPoint[1],self.col )
-        pyxel.line(self.points[0][0],self.points[0][1],self.points[3][0],self.points[3][1],self.col )
-        
-        for shoot in self.shoots:
-            shoot.draw()
-        # pyxel.trib(self.points[0][0],self.points[0][1],self.points[1][0],self.points[1][1],self.points[3][0],self.points[3][1],self.col)
-        if (self.otherPlayer): self.angleController.draw()
-        if (pyxel.btn(pyxel.KEY_TAB)): pyxel.text(self.pos[0]-(len(self.name)*2),self.pos[1]+10,self.name,7)
+        if (self.heal > 0):
+            
+            self.collisionObject.draw()
+            
+            for pixel in self.points:
+                pyxel.pset(pixel[0],pixel[1],11)
+            for i in range(1,len(self.points)):
+                point = self.points[i-1]
+                nextPoint = self.points[i]
+                pyxel.line(point[0],point[1],nextPoint[0],nextPoint[1],self.col )
+            pyxel.line(self.points[0][0],self.points[0][1],self.points[3][0],self.points[3][1],self.col )
+            
+            for shoot in self.shoots:
+                shoot.draw()
+            # pyxel.trib(self.points[0][0],self.points[0][1],self.points[1][0],self.points[1][1],self.points[3][0],self.points[3][1],self.col)
+            if (self.otherPlayer): self.angleController.draw()
+            if (pyxel.btn(pyxel.KEY_TAB)): pyxel.text(self.pos[0]-(len(self.name)*2),self.pos[1]+10,self.name,7)
         
     def keyDownScan(self):
         if (pyxel.btn(pyxel.KEY_W)):

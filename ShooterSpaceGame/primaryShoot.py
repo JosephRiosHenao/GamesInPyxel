@@ -41,8 +41,11 @@ class Shoot():
         # pyxel.line(self.x,self.y,self.x+self.r,self.y+self.r,self.col)
         
     def isCollision(self, playerCollisionPos, collisionR):
-        distancia = math.sqrt( (playerCollisionPos[0] - self.x)*(playerCollisionPos[0] - self.x) + (playerCollisionPos[1] - self.y)*(playerCollisionPos[1] - self.y) );
-        if ( distancia < collisionR + self.r ):
-            self.destroy = True
-        else:
-            if (not self.destroy): self.destroy = False
+        if ( not self.destroy):
+            distancia = math.sqrt( (playerCollisionPos[0] - self.x)*(playerCollisionPos[0] - self.x) + (playerCollisionPos[1] - self.y)*(playerCollisionPos[1] - self.y) );
+            if ( distancia < collisionR + self.r ):
+                self.destroy = True
+                return True
+            else:
+                if (not self.destroy): self.destroy = False
+                return False

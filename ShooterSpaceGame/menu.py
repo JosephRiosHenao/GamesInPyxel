@@ -5,6 +5,8 @@ import client
 from keyboardInput import KeyboardInput
 import player
 
+DAMAGE = 50
+
 class Menu():
     def __init__(self):
         self.state = 0
@@ -60,15 +62,19 @@ class Menu():
             self.multiplayer.my["pos"][1] = self.player.pos[1]
             self.multiplayer.my["angle"]  = self.player.angle
             self.multiplayer.my["shoot"]  = self.player.typeShoot
+            self.multiplayer.my["heal"] = self.player.heal
             self.player.typeShoot = 0
             
             self.otherPlayer.pos[0] = self.multiplayer.other["pos"][0]
             self.otherPlayer.pos[1] = self.multiplayer.other["pos"][1]
             self.otherPlayer.angle  = self.multiplayer.other["angle"]
+            self.otherPlayer.heal = self.multiplayer.other["heal"]
+            
             if (self.multiplayer.other["shoot"] != 0): self.otherPlayer.shoot(self.multiplayer.other["shoot"])
             
             for shoot in self.otherPlayer.shoots:
-                shoot.isCollision(self.player.collisionObject.pos,self.player.collisionObject.r)
+                if (shoot.isCollision(self.player.collisionObject.pos,self.player.collisionObject.r)):
+                    self.player.heal -= DAMAGE
             for shoot in self.player.shoots:
                 shoot.isCollision(self.otherPlayer.collisionObject.pos,self.otherPlayer.collisionObject.r)
             # self.multiplayer.other["shoot"] = 0

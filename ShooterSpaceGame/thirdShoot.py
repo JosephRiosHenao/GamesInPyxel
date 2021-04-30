@@ -69,8 +69,11 @@ class Shoot():
             self.miniShoots.append( secondShoot.Shoot(self.x,self.y,1.5,14,self.angle,50,5))
         
     def isCollision(self, playerCollisionPos, collisionR):
-        distancia = math.sqrt( (playerCollisionPos[0] - self.x)*(playerCollisionPos[0] - self.x) + (playerCollisionPos[1] - self.y)*(playerCollisionPos[1] - self.y) );
-        if ( distancia < collisionR + self.r ):
-            self.destroy = True
-        else:
-            if (not self.destroy): self.destroy = False
+        if (not self.destroy):
+            distancia = math.sqrt( (playerCollisionPos[0] - self.x)*(playerCollisionPos[0] - self.x) + (playerCollisionPos[1] - self.y)*(playerCollisionPos[1] - self.y) );
+            if ( distancia < collisionR + self.r ):
+                self.destroy = True
+                return True
+            else:
+                if (not self.destroy): self.destroy = False
+                return False
