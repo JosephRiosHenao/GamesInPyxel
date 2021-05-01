@@ -71,7 +71,10 @@ class Player():
                 shoot.draw()
             # pyxel.trib(self.points[0][0],self.points[0][1],self.points[1][0],self.points[1][1],self.points[3][0],self.points[3][1],self.col)
             if (self.otherPlayer): self.angleController.draw()
-            if (pyxel.btn(pyxel.KEY_TAB)): pyxel.text(self.pos[0]-(len(self.name)*2),self.pos[1]+10,self.name,7)
+            if (pyxel.btn(pyxel.KEY_TAB)): 
+                pyxel.text(self.pos[0]-(len(self.name)*2),self.pos[1]+10,self.name,7)
+                pyxel.rectb(self.pos[0]-12,self.pos[1]+13,24,8,7)
+                pyxel.rect(self.pos[0]-10,self.pos[1]+15,20,4,7)
         
     def keyDownScan(self):
         if (pyxel.btn(pyxel.KEY_W)):

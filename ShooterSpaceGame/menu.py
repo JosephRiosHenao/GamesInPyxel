@@ -149,7 +149,12 @@ class Menu():
         if (self.online):
             self.player.draw()
             self.otherPlayer.draw()
-        
+            if (self.player.heal<=0 and self.otherPlayer.heal<=0):
+                pyxel.text(pyxel.width/2-((pyxel.FONT_WIDTH/2)*len("EMPATE")),pyxel.height/2,"EMPATE",7)
+            elif (self.player.heal<=0):
+                pyxel.text(pyxel.width/2-((pyxel.FONT_WIDTH/2)*len("GANA "+str(self.otherPlayer.name)+"!!")),pyxel.height/2,"GANA "+str(self.otherPlayer.name)+"!!",7)
+            elif (self.otherPlayer.heal<=0):
+                pyxel.text(pyxel.width/2-((pyxel.FONT_WIDTH/2)*len("GANA "+str(self.player.name)+"!!")),pyxel.height/2,"GANA "+str(self.player.name)+"!!",7)
         else:
             if (self.internalState == 0):
                 pyxel.cls(6)
