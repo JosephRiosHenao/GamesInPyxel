@@ -11,6 +11,7 @@ from time import time
 VELOCITY = 0.1
 REDUCE_VELOCITY = 0.01
 MAX_VELOCITY = 1
+INITIAL_HEAL = 100
 
 class Player():
     def __init__(self,w,h,x,y,col,otherPlayer = False):
@@ -22,7 +23,7 @@ class Player():
         self.otherPlayer = not otherPlayer
         self.stateShoot = True
         self.collisionObject = circleColisionObject.Circle([0,0],1)
-        self.heal = 100
+        self.heal = INITIAL_HEAL
         self.points = [
             [self.pos[0],self.pos[1]-self.size[1]], #SUPERIOR
             [self.pos[0]+self.size[0]/2,self.pos[1]+self.size[1]], #DERECHA
@@ -73,8 +74,8 @@ class Player():
             if (self.otherPlayer): self.angleController.draw()
             if (pyxel.btn(pyxel.KEY_TAB)): 
                 pyxel.text(self.pos[0]-(len(self.name)*2),self.pos[1]+10,self.name,7)
-                pyxel.rectb(self.pos[0]-12,self.pos[1]+13,24,8,7)
-                pyxel.rect(self.pos[0]-10,self.pos[1]+15,20,4,7)
+                pyxel.rectb(self.pos[0]-12,self.pos[1]+16,24,8,7)
+                pyxel.rect(self.pos[0]-10,self.pos[1]+18,self.heal/5,4,7)
         
     def keyDownScan(self):
         if (pyxel.btn(pyxel.KEY_W)):
@@ -130,7 +131,7 @@ class Player():
         if (self.stateShoot):
             self.typeShoot = type
             if (type==1): self.shoots.append( primaryShoot.Shoot(self.points[0][0],self.points[0][1],0.5,15,self.angle,100 ))
-            if (type==2): self.shoots.append( secondShoot.Shoot(self.points[0][0],self.points[0][1],2,14,self.angle,50,10))
+            if (type==2): self.shoots.append( secondShoot.Shoot(self.points[0][0],self.points[0][1],2,14,self.angle,50,25))
             if (type==3): self.shoots.append( thirdShoot.Shoot(self.points[0][0],self.points[0][1],2,14,self.angle,50,4))
         self.defineIndex()
 

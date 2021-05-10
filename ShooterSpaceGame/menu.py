@@ -5,7 +5,7 @@ import client
 from keyboardInput import KeyboardInput
 import player
 
-DAMAGE = 50
+DAMAGE = 10
 
 class Menu():
     def __init__(self):
@@ -71,13 +71,13 @@ class Menu():
             self.otherPlayer.heal = self.multiplayer.other["heal"]
             
             if (self.multiplayer.other["shoot"] != 0): self.otherPlayer.shoot(self.multiplayer.other["shoot"])
-            
-            for shoot in self.otherPlayer.shoots:
-                if (shoot.isCollision(self.player.collisionObject.pos,self.player.collisionObject.r)):
-                    self.player.heal -= DAMAGE
-            for shoot in self.player.shoots:
-                shoot.isCollision(self.otherPlayer.collisionObject.pos,self.otherPlayer.collisionObject.r)
-            # self.multiplayer.other["shoot"] = 0
+            if (self.player.heal>0 and self.otherPlayer.heal>0):
+                for shoot in self.otherPlayer.shoots:
+                    if (shoot.isCollision(self.player.collisionObject.pos,self.player.collisionObject.r)):
+                        self.player.heal -= DAMAGE
+                for shoot in self.player.shoots:
+                    shoot.isCollision(self.otherPlayer.collisionObject.pos,self.otherPlayer.collisionObject.r)
+                # self.multiplayer.other["shoot"] = 0
             
         else:
             
