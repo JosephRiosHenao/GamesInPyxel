@@ -75,5 +75,8 @@ class Shoot():
                 self.destroy = True
                 return True
             else:
+                for shoot in self.miniShoots:
+                    if (shoot.isCollision(playerCollisionPos,collisionR)):
+                        return True
                 if (not self.destroy): self.destroy = False
                 return False
