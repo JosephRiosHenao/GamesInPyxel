@@ -18,5 +18,5 @@ class Game():
         pyxel.cls(0)
         for button in self.keys:
             button.draw()
-            # a
+            # Viendo curso de udemy de Angular
 Game()
