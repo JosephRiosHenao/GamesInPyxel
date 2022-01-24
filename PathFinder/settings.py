@@ -1,4 +1,4 @@
-CONIFG = {  "width": 192,
+CONFIG = {  "width": 192,
             "height": 128,
             "caption": "ON DEVELOPMENT",
             "fps": 60,
