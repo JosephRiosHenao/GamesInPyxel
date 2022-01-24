@@ -11,6 +11,18 @@ class Controller():
             for x in range(math.floor(192/CONFIG["scaleBG"])):
                 newPaths.append(Path(x*CONFIG["scaleBG"],y*CONFIG["scaleBG"]))
         return newPaths
+    def update(self):
+        for path in self.paths:
+            path.update()
+            if path.stateMouse:
+                self.distance(path)
+            
     def draw(self):
         for path in self.paths:
             path.draw()
+    def distance(self, path):
+        for pathFinish in self.paths:
+            distance = pathFinish.pos[0]-path.pos[0]
+            print(distance)
+            if (distance >= -20 and distance <= 20): pathFinish.distanceSet(0)
+            

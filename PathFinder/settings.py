@@ -5,5 +5,6 @@ CONFIG = {  "width": 192,
             "scale": 3,
             "defaultColor": 5,
             "pathColor": 6,
-            "scaleBG": 5
+            "scaleBG": 5,
+            "distanceColor":[2,3,4]
         }
