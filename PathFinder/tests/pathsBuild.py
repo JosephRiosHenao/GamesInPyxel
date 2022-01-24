@@ -4,7 +4,6 @@ import random
 
 SEPARATE = 3
 
-
 class Game():
     def __init__(self):
         self.paths = self.calculate()
